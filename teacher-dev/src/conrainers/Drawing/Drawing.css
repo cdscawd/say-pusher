@@ -1,0 +1,217 @@
+
+@font-face {
+  font-family: 'iconfont';
+  src: url("../../fonts/iconfont.eot");
+  src: url("../../fonts/iconfont.eot?#iefix") format("embedded-opentype"), url("../../fonts/iconfont.woff") format("woff"), url("../../fonts/iconfont.ttf") format("truetype"), url("../../fonts/iconfont.svg#iconfont") format("svg");
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-stroke-width: 0.2px;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: #000;
+}
+
+#Drawing-content {
+  width: 768px;
+  height: 924px;
+  min-width: 768px; 
+  max-width: 768px; 
+  min-height: 924px; 
+  position: relative;
+}
+
+#Picture-Section {
+  width: 768px;
+  height: 960px;
+  min-width: 768px; 
+  max-width: 768px; 
+  min-height: 960px; 
+  margin: 0 auto;
+    background: rgb(255, 192, 56);
+}
+
+.picture-box {
+  width: 100%;
+  height: 100%;
+}
+.picture-box .title {
+  height: 40px;
+  line-height: 40px;
+  font-size: 24px;
+  text-align: center;
+}
+.picture-box .img{
+  /* width: 768px; */
+  display: block;
+  height: 884px;
+  margin: 0 auto;
+}
+
+/* 绘图工具 */
+#Drawing-Tools {
+  padding: 10px 20px;
+  background-color: #fff;
+}
+.tools{
+  position: relative;
+  text-align: left;
+}
+.tools li {
+  display: inline-block;
+  text-align: center;
+  width: 32px;
+  height: 32px;
+  box-shadow: 0 0 4px #49a4db;
+  margin: 0 6px;
+  cursor: pointer;
+  background-color: #FFF;
+  -webkit-transition: background-color 0.2s ease-in-out;
+  border-radius: 20px;
+  position: relative;
+  transform: all 0.2s ease 0s;
+}
+.tools .iconfont {
+  font-size: 18px;
+  line-height: 32px;
+}
+.tools li.active {
+  background-color: #49a4db;
+  box-shadow: 0 0 4px #99bce2;
+}
+.tools .active .iconfont {
+  color: #fff;
+}
+
+/* 线宽 颜色 */
+.style-picker-box {
+  position: absolute;
+  top: -44px;
+  left: -100px;
+  z-index: 10;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: row nowrap;
+  -ms-flex-flow: row nowrap;
+  flex-flow: row;
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 245px;
+  height: 38px;
+  background-color: #e5e5e5;
+  border: 1px solid #333;
+}
+.line-width-check{
+  width: 72px;
+  height: 100%;
+  margin-left: 4px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: row nowrap;
+  -ms-flex-flow: row nowrap;
+  flex-flow: row;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+.line-check-box{
+  width: 21px;
+  height: 21px;
+}
+.line-width{
+  margin-top: 9.5px;
+  margin-left: 9.5px;
+  border-radius: 50%;
+  background-color: #000;
+}
+.line-width-check .active {
+  border: 1px solid #000;
+}
+.line-width-check [line="2"] {
+  width: 2px;
+  height: 2px;
+}
+.line-width-check [line="4"] {
+  width: 4px;
+  height: 4px;
+}
+.line-width-check [line="6"] {
+  width: 6px;
+  height: 6px;
+}
+.color-box{
+  width: 158px;
+  height: 30px;
+  margin-left: 6px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: row nowrap;
+  -ms-flex-flow: row nowrap;
+  flex-flow: row;
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+.checked-color {
+  width: 26px;
+  height: 26px;
+  border: 1px solid #333;
+}
+.color-check-box {
+  width: 128px;
+  height: 30px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: row wrap;
+  -ms-flex-flow: row wrap;
+  flex-flow: row wrap;
+  margin-left: 2px;
+}
+.color-item {
+  width: 11px;
+  height: 11px;
+  margin-left: 3px;
+  margin-top: 1px;
+  border: 1px solid #707070;
+}
+
+
+
+
+
+#Canvas-Section {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  width: 768px;
+  height: 960px;
+}
+
