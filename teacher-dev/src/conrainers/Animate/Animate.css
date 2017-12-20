@@ -48,6 +48,12 @@ body {
 .word-text{
   display: block;
   position: absolute;
+  font-family: 'Comic Sans MS';
+  font-weight: 400;
+  color: '#000';
+  text-align: center;
+  text-decoration: 'none';
+  white-space: 'nowrap';
 }
 
 
