@@ -30,8 +30,8 @@ body {
 .control-tools {
   position: absolute;
   right: 0;
-  bottom: 0;
-  padding: 10px 20px;
+  bottom: 10px;
+  padding: 10px;
 }
 .control-tools .start {
   padding: 4px;

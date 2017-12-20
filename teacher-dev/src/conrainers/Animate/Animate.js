@@ -1,21 +1,28 @@
 import React, {Component} from 'react';
 import $ from 'jquery'
+import './../../style/buttons.css'
 import './Animate.css';
 import pic_01 from '../../images/pic_01.png'
 
 class Animate extends Component {
 	state = {
 		// 页面类型
-		page_type: 'START',
-
+		page_type: 'START', 	// START WORD NEXT_EXERCISE
+		page_end: false, 			// 页面练习是否完成
 		// 当前页面背景图
 		background_image_URL: '',
 
-		// 页面展现数据
-		dom_data: [],
+		// 页面展现数据 WORD
+		word_data: {
+			image: [],
+			text: []
+		},
 
 		// 当前页面鼠标点击次数
 		target_number: 0,
+
+		// 鼠标点击类型
+		target_type: 'IMAGE',		//IMAGE	
 
 		// 请求获得数据	
 		data: {
@@ -113,7 +120,6 @@ class Animate extends Component {
 		})
 	}
 	componentWillUnmount() {}
-
 	// 开始按钮
 	startButtonBind = () => {
 		let page_type = 'WORD'
@@ -125,60 +131,74 @@ class Animate extends Component {
 		console.log('::开始练习')
 	}
 
-	// 当前切换下一个数据
-	nextButtonBind = () => {
+	// WORD 当前切换下一个数据
+	nextWordBind = () => {
 		let page_type = this.state.page_type
 		let target_number = this.state.target_number
-		let dom_data = this.state.dom_data
-		let resData = this.state.data[page_type]
+		let word_data = this.state.word_data
+		var target_type = this.state.target_type
+		let resData = this.state.data[page_type].data
 
-		if ( resData.data[target_number] && resData.data[target_number].length !== 0 
-			&& resData.data[target_number] !== undefined) {
-			dom_data.push(resData.data[target_number])
-			this.setState({
-			target_number: target_number + 1,
-				dom_data: dom_data
-			})
+		if (target_number < resData.length) {
+			if (target_type === 'IMAGE') { 
+				word_data.image.push(resData[target_number].image)
+				this.setState({
+					word_data: word_data,
+					target_type: 'WORD'
+				})
+			} else {
+				word_data.text.push(resData[target_number].text)
+				this.setState({
+					word_data: word_data,
+					target_type: 'IMAGE',
+					target_number: target_number + 1,
+				}) 
+				if( (target_number + 1) === resData.length) {
+					this.setState({
+						page_end: true,
+					}) 
+					console.log('WORD 已完成练习 跳转下一个')
+				}
+			}
 		}
 
-		console.log(this.state.dom_data)
-		console.log(this.state.target_number)
+		console.log('target_number:: ' + target_number )
+		console.log('resData.length:: ' + resData.length )
+	}
 
+	// 切换下一个练习页面
+	nextExerciseBind = () => {
+		console.log(121312321)
 	}
 	render() {
 		let page_type = this.state.page_type
 
 		return (
 			<section id="Animate-content" style={{backgroundImage:  this.state.data[page_type].background.image_URL}}>
-				{
-					this.state.page_type === 'WORD' &&
-					this.state.dom_data.map((item, index) => {
-						return  <div key={index}>
-											<img className={`word-image ${item.image.animation}`} style={{
-													width: item.image.width,
-													height: item.image.height,
-													left: item.image.left,
-													top: item.image.top,
-												}} src={item.image.path} />
-											<span className={`word-text ${item.text.animation}`} style={{
-													width: item.text.width,
-													top: item.text.top,
-													left: item.text.left, 
-													color: item.text.color,
-													fontSize: item.text.fontSize,
-												}}>{item.text.value}</span>
-										</div>
+				{	this.state.word_data.image.map((item, index) => {
+						return  <img key={index} className={`word-image ${item.animation}`} style={{
+													width: item.width,
+													height: item.height,
+													left: item.left,
+													top: item.top,
+												}} src={item.path} />
+					})
+				}
+				{ this.state.word_data.text.map((item, index) => {
+						return  <span key={index} className={`word-text ${item.animation}`} style={{
+											width: item.width,
+											top: item.top,
+											left: item.left, 
+											color: item.color,
+											fontSize: item.fontSize,
+										}}>{item.value}</span>
 					})
 				}
 
 				<div className="control-tools">
-					{
-						this.state.page_type == 'START' ?
-							 <div className="start" title="next action" 
-							 	onClick={this.startButtonBind}>Start</div> :
-							 <div className="next" title="next action" 
-								onClick={this.nextButtonBind}>Next</div>
-					}
+					{ this.state.page_type == 'START' && <div className="start-exercise button button-3d button-caution button-pill button-jumbo" onClick={this.startButtonBind}>Start Exercise</div> }
+					{ this.state.page_type == 'WORD' &&  !this.state.page_end && <div className="next-word button button-3d button-primary button-pill button-jumbo" onClick={this.nextWordBind}>Next Word</div> }
+					{ this.state.page_end &&  <div className="next-exercise button button-3d button-highlight button-pill button-jumbo" onClick={this.nextExerciseBind}>Next Exercise</div> }
 				</div>
 			</section>
 		)
