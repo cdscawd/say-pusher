@@ -5,128 +5,153 @@ import pic_01 from '../../images/pic_01.png'
 
 class Animate extends Component {
 	state = {
+		// 页面类型
+		page_type: 'START',
+
+		// 当前页面背景图
+		background_image_URL: '',
+
 		// 页面展现数据
 		dom_data: [],
 
-		// 鼠标点击次数
+		// 当前页面鼠标点击次数
 		target_number: 0,
 
 		// 请求获得数据	
 		data: {
-			background: {
-				image_path: "url('./animation/step_01/bg.png')"
-			},
-			word: [
-				{
-					image: {
-						path: './animation/step_01/mom.png',
-						width: 200,
-						height: 200,
-						top: 140,
-						left: 40,
-						animation: 'animated fadeInLeft'
-					},
-					text: {
-						value: 'mom',
-						top: 340,
-						left: 40,
-						width: 200,
-						fontSize: 28,
-						animation: 'animated fadeInUpBig'
-					}
-				}, {
-					image: {
-						path: './animation/step_01/dad.png',
-						width: 200,
-						height: 200,
-						top: 140,
-						left: 280,
-						animation: 'animated fadeInUp'
-					},
-					text: {
-						value: 'dad',
-						top: 340,
-						left: 280,
-						width: 200,
-						fontSize: 28,
-						animation: 'animated fadeInUpBig'
-					}
-				}, {
-					image: {
-						path: './animation/step_01/grandma.png',
-						width: 200,
-						height: 200,
-						top: 140,
-						left: 520,
-						animation: 'animated fadeInDown'
-					},
-					text: {
-						value: 'grandma',
-						top: 340,
-						left: 520,
-						width: 200,
-						fontSize: 28,
-						animation: 'animated fadeInUpBig'
-					}
-				}, {
-					image: {
-						path: './animation/step_01/grandpa.png',
-						width: 200,
-						height: 200,
-						top: 140,
-						left: 760,
-						animation: 'animated fadeInRight'
-					},
-					text: {
-						value: 'grandpa',
-						top: 340,
-						left: 760,
-						width: 200,
-						fontSize: 28,
-						animation: 'animated fadeInUpBig'
-					}
+			START: {
+				background: {
+					image_URL: "url('./animation/step_01/background/start.jpg')"
 				}
-			],
-		}
+			},
 
+			WORD: { 
+				background: {
+					image_URL: "url('./animation/step_01/background/word.png')"
+				},
+				data: [ 
+					{
+						image: {
+							path: './animation/step_01/mom.png',
+							width: 200,
+							height: 200,
+							top: 140,
+							left: 40,
+							animation: 'animated fadeInLeft'
+						},
+						text: {
+							value: 'mom',
+							top: 340,
+							left: 40,
+							width: 200,
+							fontSize: 28,
+							animation: 'animated fadeInUpBig'
+						}
+					}, 
+					{
+						image: {
+							path: './animation/step_01/dad.png',
+							width: 200,
+							height: 200,
+							top: 140,
+							left: 280,
+							animation: 'animated fadeInUp'
+						},
+						text: {
+							value: 'dad',
+							top: 340,
+							left: 280,
+							width: 200,
+							fontSize: 28,
+							animation: 'animated fadeInUpBig'
+						}
+					}, 
+					{
+						image: {
+							path: './animation/step_01/grandma.png',
+							width: 200,
+							height: 200,
+							top: 140,
+							left: 520,
+							animation: 'animated fadeInDown'
+						},
+						text: {
+							value: 'grandma',
+							top: 340,
+							left: 520,
+							width: 200,
+							fontSize: 28,
+							animation: 'animated fadeInUpBig'
+						}
+					}, 
+					{
+						image: {
+							path: './animation/step_01/grandpa.png',
+							width: 200,
+							height: 200,
+							top: 140,
+							left: 760,
+							animation: 'animated fadeInRight'
+						},
+						text: {
+							value: 'grandpa',
+							top: 340,
+							left: 760,
+							width: 200,
+							fontSize: 28,
+							animation: 'animated fadeInUpBig'
+						}
+					}
+				],
+			}
+		}
 	};
 	componentWillMount() {}
 	componentDidMount() {
-		console.log(this.state.data.word.length)
+		this.setState({
+			background_image_URL: this.state.data.START.background.image_URL
+		})
 	}
 	componentWillUnmount() {}
-	nextButtonBind = () => {
-		var target_number = this.state.target_number
-		var dom_data = this.state.dom_data
-		var word = this.state.data.word
 
-		if (target_number < word.length) {
-			dom_data.push(word[target_number])
+	// 开始按钮
+	startButtonBind = () => {
+		let page_type = 'WORD'
+		let backgroundImageURL = this.state.data[page_type].background.image_URL
+		this.setState({
+			page_type: 'WORD',
+			background_image_URL: backgroundImageURL
+		})
+		console.log('::开始练习')
+	}
+
+	// 当前切换下一个数据
+	nextButtonBind = () => {
+		let page_type = this.state.page_type
+		let target_number = this.state.target_number
+		let dom_data = this.state.dom_data
+		let resData = this.state.data[page_type]
+
+		if ( resData.data[target_number] && resData.data[target_number].length !== 0 
+			&& resData.data[target_number] !== undefined) {
+			dom_data.push(resData.data[target_number])
 			this.setState({
-				target_number: target_number + 1,
+			target_number: target_number + 1,
 				dom_data: dom_data
 			})
 		}
 
-		// console.log(target_number)
-		// console.log(this.state.dom_data)
+		console.log(this.state.dom_data)
+		console.log(this.state.target_number)
 
 	}
 	render() {
-		var data = this.state.data
-		var words = this.state.data.word
+		let page_type = this.state.page_type
 
 		return (
-			<section id="Animate-content" style={{backgroundImage: data.background.image_path}}>
-
-				{/*<img  className={`word-image ${words[0].image.animation}`} style={{
-					width: words[0].image.width,
-					height: words[0].image.height,
-					left: words[0].image.left,
-					top: words[0].image.top,
-				}} src={words[0].image.path} />*/}
-
+			<section id="Animate-content" style={{backgroundImage:  this.state.data[page_type].background.image_URL}}>
 				{
+					this.state.page_type === 'WORD' &&
 					this.state.dom_data.map((item, index) => {
 						return  <div key={index}>
 											<img className={`word-image ${item.image.animation}`} style={{
@@ -147,8 +172,13 @@ class Animate extends Component {
 				}
 
 				<div className="control-tools">
-					<div className="next" title="next action" 
-					onClick={this.nextButtonBind}>Next</div>
+					{
+						this.state.page_type == 'START' ?
+							 <div className="start" title="next action" 
+							 	onClick={this.startButtonBind}>Start</div> :
+							 <div className="next" title="next action" 
+								onClick={this.nextButtonBind}>Next</div>
+					}
 				</div>
 			</section>
 		)

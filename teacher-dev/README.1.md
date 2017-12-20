@@ -3,6 +3,8 @@
 
 # 动画页面类型定义
   word 单词练习 word-image
+  resData   临时变量
+  res_data  状态变量
 
 
 

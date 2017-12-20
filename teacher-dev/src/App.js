@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+// import Animate_Sentence from './conrainers/Animate_Sentence/Animate'
+import Animate_WORD from './conrainers/Animate_WORD/Animate'
 import Animate from './conrainers/Animate/Animate'
 import Drawing from './conrainers/Drawing/Drawing'
 import Pdf from './conrainers/Pdf/Pdf'
@@ -16,7 +18,7 @@ class App extends Component {
   render() {
     return (
       <div className="section-content">
-        <Animate/>
+        <Animate_WORD/>
       </div>
     );
   }
