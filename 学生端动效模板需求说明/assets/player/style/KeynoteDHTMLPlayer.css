@@ -812,6 +812,9 @@ div#waitingSpinner {
 
 
 /* Add */
+div.DOMHidden {
+	display: none;
+}
 div#NextControlButton {
   position: absolute;
   top: initial;

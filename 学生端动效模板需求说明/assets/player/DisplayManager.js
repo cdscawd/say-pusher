@@ -435,7 +435,7 @@ var DisplayManager = Class.create({
             if (a) {
                 this.previousButton.setAttribute("class", "previousButtonEnabled")
             } else {
-                this.previousButton.setAttribute("class", "previousButtonDisabled")
+                this.previousButton.setAttribute("class", "previousButtonDisabled DOMHidden")
             }
         }
     },
@@ -445,7 +445,7 @@ var DisplayManager = Class.create({
         }
         if (gMode != kModeDesktop) {
             if (a) {
-                this.nextButton.setAttribute("class", "nextButtonEnabled")
+                this.nextButton.setAttribute("class", "nextButtonEnabled DOMHidden")
             } else {
                 this.nextButton.setAttribute("class", "nextButtonDisabled")
             }
