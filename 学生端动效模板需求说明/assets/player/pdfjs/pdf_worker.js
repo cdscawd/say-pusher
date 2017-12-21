@@ -2316,7 +2316,7 @@ var NetworkManager = (function NetworkManagerClosure() {
       // When this error occurs, this feature detection method will mistakenly
       // report that moz-chunked-arraybuffer is not supported in Firefox 37-.
       x.open('GET', 'https://example.com');
-      x.responseType = 'moz-chunked-arraybuffer';
+      //x.responseType = 'moz-chunked-arraybuffer';
       return x.responseType === 'moz-chunked-arraybuffer';
     } catch (e) {
       return false;

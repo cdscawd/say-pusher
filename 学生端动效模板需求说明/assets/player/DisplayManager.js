@@ -36,6 +36,7 @@ var DisplayManager = Class.create({
         this.helpText = document.getElementById("helpText");
         this.previousButton = document.getElementById("previousButton");
         this.nextButton = document.getElementById("nextButton");
+        this.NextPageButton = document.getElementById("NextPageButton");
         this.slideCounter = document.getElementById("slideCounter");
         this.waitingIndicatorTimeout = null;
         this.orientation = kOrientationUnknown;
@@ -359,6 +360,8 @@ var DisplayManager = Class.create({
             height: this.stageAreaHeight
         })
     },
+
+    // 相关隐藏项   
     showApplicableControls: function() {
         if (this.inLaunchMode === true) {
             hideElement(this.previousButton);

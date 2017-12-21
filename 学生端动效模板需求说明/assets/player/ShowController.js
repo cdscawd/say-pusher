@@ -55,7 +55,7 @@ var ShowController = Class.create({
         document.observe(kKeyDownEvent, this.handleKeyDownEvent.bind(this));
         document.observe(kSwipeEvent, this.handleSwipeEvent.bind(this));
             //Event.observe(this.displayManager.body, "click", this.handleClickEvent.bind(this));
-        Event.observe(this.displayManager.stageArea, "click", this.handleClickEvent.bind(this));
+        //Event.observe(this.displayManager.stageArea, "click", this.handleClickEvent.bind(this));
         document.observe(kFullscreenChangeEventName, this.handleFullscreenChangeEvent.bind(this));
         Event.observe(window, "resize", this.handleWindowResizeEvent.bind(this));
         this.touchController.registerTapEventCallback(this.handleTapEvent.bind(this));
@@ -673,6 +673,7 @@ var ShowController = Class.create({
         return a
     },
     advanceToNextBuild: function(b) {
+        console.log('advanceToNextBuild() 下一个动作 click')
         if (!this.script) {
             return false
         }
@@ -834,7 +835,10 @@ var ShowController = Class.create({
             break
         }
     },
+
+    // 上一页
     goBackToPreviousSlide: function(c) {
+        console.log('goBackToPreviousSlide() 上一页 click')
         if (!this.script) {
             return false
         }
@@ -851,7 +855,7 @@ var ShowController = Class.create({
         case kShowControllerState_Playing:
         case kShowControllerState_IdleAtInitialState:
             var d = this.scriptManager.slideIndexFromSceneIndex(b);
-            var a;
+            var a; // 当前Page Index 递减
             if (d === 0) {
                 if (this.script.loopSlideshow) {
                     a = this.script.slideCount - 1
@@ -875,6 +879,7 @@ var ShowController = Class.create({
             break
         }
     },
+
     calculatePreviousSceneIndex: function(a) {
         if (a == -1) {
             previousSceneIndex = -1

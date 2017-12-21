@@ -1,8 +1,8 @@
 var KNStaticAssets = {};
-KNStaticAssets["KNTransitionSwoosh_Shadow.png"] = new Image();
-KNStaticAssets["KNTransitionSwoosh_Shadow.png"].src = static_url("KNTransitionSwoosh_Shadow.png");
-KNStaticAssets["KNTransitionSlide_Black.png"] = new Image();
-KNStaticAssets["KNTransitionSlide_Black.png"].src = static_url("KNTransitionSlide_Black.png");
+KNStaticAssets["./images/KNTransitionSwoosh_Shadow.png"] = new Image();
+KNStaticAssets["./images/KNTransitionSwoosh_Shadow.png"].src = static_url("./images/KNTransitionSwoosh_Shadow.png");
+KNStaticAssets["./images/KNTransitionSlide_Black.png"] = new Image();
+KNStaticAssets["./images/KNTransitionSlide_Black.png"].src = static_url("./images/KNTransitionSlide_Black.png");
 var TextureManager = Class.create({
     initialize: function(a) {
         this.script = null;
