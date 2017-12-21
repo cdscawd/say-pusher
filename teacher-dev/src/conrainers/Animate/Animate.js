@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import $ from 'jquery'
-import './../../style/buttons.css'
+// import './../../style/buttons.css'
 import './Animate.css';
 import pic_01 from '../../images/pic_01.png'
 
