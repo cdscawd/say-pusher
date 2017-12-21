@@ -7,7 +7,7 @@ import pic_01 from '../../images/pic_01.png'
 class Animate extends Component {
 	state = {
 		// 页面类型
-		page_type: 'SENTENCE', 	// START WORD NEXT_EXERCISE SENTENCE
+		page_type: 'START', 	// START WORD NEXT_EXERCISE SENTENCE
 		page_end: false, 			// 页面练习是否完成
 		// 当前页面背景图
 		background_image_URL: '',
@@ -159,7 +159,13 @@ class Animate extends Component {
 						}
 					}, 
 				]
-			}
+			},
+
+			WORD_IMAGE: {
+				background: {
+					image_URL: "url('./animation/sentence/background/sentence.jpg')"
+				},
+			},
 		}
 	};
 	componentWillMount() {}
@@ -248,13 +254,30 @@ class Animate extends Component {
 
 	// 切换下一个练习页面
 	nextExerciseBind = () => {
-		this.setState({
-			page_type: 'SENTENCE',
-			page_end: false,
-			target_number: 0,
-			target_type: 'IMAGE',
-		})
-		console.log('::开始对话练习')
+		let page_type = this.state.page_type
+
+		switch (page_type) {
+			case 'WORD':
+				this.setState({
+					page_type: 'SENTENCE',
+					page_end: false,
+					target_number: 0,
+					target_type: 'IMAGE',
+				})
+				break;
+			case 'SENTENCE':
+				this.setState({
+					page_type: 'WORD_IMAGE',
+					page_end: false,
+					target_number: 0,
+					target_type: 'IMAGE',
+				})
+				console.log(':: 开始练习')
+				break;
+			default:
+				break;
+		}
+		
 	}
 	render() {
 		let page_type = this.state.page_type
