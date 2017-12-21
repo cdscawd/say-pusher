@@ -826,3 +826,28 @@ div#waitingSpinner
     -moz-animation: spinnerAnimationRotate 1s linear infinite;
     -ms-animation: spinnerAnimationRotate 1s linear infinite;
 }
+
+
+/* Add */
+div#NextControlButton {
+    position: absolute;
+    top: initial;
+    bottom: 20px;
+    right: 10px;
+}
+div#nextButton {
+    visibility: inherit!important;
+    width: inherit;
+    height: inherit;
+    right: 10px;
+    bottom: 20px;
+    top: inherit;
+}
+div#previousButton {
+    visibility: inherit!important;
+    width: inherit;
+    height: inherit;
+    right: 140px;
+    bottom: 20px;
+    top: inherit;
+}

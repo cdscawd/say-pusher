@@ -36,59 +36,59 @@ var NavigatorController = Class.create({
       }
   },
   handleClickEvent: function(b) {
-      console.log(' handleClickEvent() 侧边栏 click')
-      if (gShowController.isRecording) {
-          return
-      }
-      b = b || window.event;
-      var c = b.target || b.srcElement;
-      var a;
-      if (browserPrefix === "ms") {
-          b.cancelBubble = true
-      } else {
-          b.stopPropagation()
-      }
-      while ((c.slideNumber == null) && c.nodeName.toLowerCase() != "body") {
-          c = c.parentNode
-      }
-      if (c.slideNumber) {
-          this.selectedSlideIndex = c.slideNumber;
-          this.select(this.selectedSlideIndex)
-      }
+    console.log(' handleClickEvent() 侧边栏 click')
+    if (gShowController.isRecording) {
+        return
+    }
+    b = b || window.event;
+    var c = b.target || b.srcElement;
+    var a;
+    if (browserPrefix === "ms") {
+        b.cancelBubble = true
+    } else {
+        b.stopPropagation()
+    }
+    while ((c.slideNumber == null) && c.nodeName.toLowerCase() != "body") {
+        c = c.parentNode
+    }
+    if (c.slideNumber) {
+        this.selectedSlideIndex = c.slideNumber;
+        this.select(this.selectedSlideIndex)
+    }
   },
   select: function(a) {
-      gShowController.jumpToSlide(a)
+    gShowController.jumpToSlide(a)
   },
   handleMouseOverEvent: function(e) {
-      console.log(" handleMouseOverEvent() 侧边栏 mouseover..." )
-      e = e || window.event;
-      var c = 0;
-      var g = 0;
-      if (e.pageX || e.pageY) {
-          c = e.pageX;
-          g = e.pageY
-      } else {
-          if (e.clientX || e.clientY) {
-              c = e.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft) - document.documentElement.clientLeft;
-              g = e.clientY + (document.documentElement.scrollTop || document.body.scrollTop) - document.documentElement.clientTop
-          }
-      }
-      if (c === 0 && g === 0) {
-          return
-      }
-      var b = this.selectedSlideIndex * 76;
-      var f = this.thumbnailScroller.domNode.scrollTop;
-      var a = this.thumbnailScroller.domNode.clientHeight;
-      if (f > b) {
-          this.thumbnailScroller.domNode.scrollTop = b
-      } else {
-          if (f + a < b + 76) {
-              var d = b - f - a + 76;
-              this.thumbnailScroller.domNode.scrollTop = this.thumbnailScroller.domNode.scrollTop + d
-          }
-      }
-      clearTimeout(this.navigatorTimeout);
-      this.navigatorTimeout = setTimeout(this.thumbnailSidebar.show.bind(this.thumbnailSidebar, this.leftSidebar), 400)
+    console.log(" handleMouseOverEvent() 侧边栏 mouseover..." )
+    e = e || window.event;
+    var c = 0;
+    var g = 0;
+    if (e.pageX || e.pageY) {
+    c = e.pageX;
+    g = e.pageY
+    } else {
+        if (e.clientX || e.clientY) {
+            c = e.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft) - document.documentElement.clientLeft;
+            g = e.clientY + (document.documentElement.scrollTop || document.body.scrollTop) - document.documentElement.clientTop
+        }
+    }
+    if (c === 0 && g === 0) {
+        return
+    }
+    var b = this.selectedSlideIndex * 76;
+    var f = this.thumbnailScroller.domNode.scrollTop;
+    var a = this.thumbnailScroller.domNode.clientHeight;
+    if (f > b) {
+        this.thumbnailScroller.domNode.scrollTop = b
+    } else {
+        if (f + a < b + 76) {
+            var d = b - f - a + 76;
+            this.thumbnailScroller.domNode.scrollTop = this.thumbnailScroller.domNode.scrollTop + d
+        }
+    }
+    clearTimeout(this.navigatorTimeout);
+    this.navigatorTimeout = setTimeout(this.thumbnailSidebar.show.bind(this.thumbnailSidebar, this.leftSidebar), 400)
   },
   handleMouseOutEvent: function(a) {
       console.log(' handleMouseOutEvent() 侧边栏 mouseleave...' )

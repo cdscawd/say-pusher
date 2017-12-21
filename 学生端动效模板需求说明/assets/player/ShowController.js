@@ -54,7 +54,8 @@ var ShowController = Class.create({
         document.observe(kStageSizeDidChangeEvent, this.handleStageSizeDidChangeEvent.bind(this));
         document.observe(kKeyDownEvent, this.handleKeyDownEvent.bind(this));
         document.observe(kSwipeEvent, this.handleSwipeEvent.bind(this));
-        Event.observe(this.displayManager.body, "click", this.handleClickEvent.bind(this));
+            //Event.observe(this.displayManager.body, "click", this.handleClickEvent.bind(this));
+        Event.observe(this.displayManager.stageArea, "click", this.handleClickEvent.bind(this));
         document.observe(kFullscreenChangeEventName, this.handleFullscreenChangeEvent.bind(this));
         Event.observe(window, "resize", this.handleWindowResizeEvent.bind(this));
         this.touchController.registerTapEventCallback(this.handleTapEvent.bind(this));
@@ -291,6 +292,7 @@ var ShowController = Class.create({
         this.processClickOrTapAtDisplayCoOrds(b)
     },
     processClickOrTapAtDisplayCoOrds: function(c) {
+        
         var b = false;
         var d;
         if (this.slideNumberController.isShowing) {
