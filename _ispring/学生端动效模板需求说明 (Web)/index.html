@@ -1,0 +1,178 @@
+<html>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<style>
+	#presentation {
+		width: 864px;
+		height: 540px;
+		display: inline-block;
+		border: 1px solid #000;
+	}
+	.buttons{
+		display: inline-block;
+		text-align: center;
+		padding: 10px 0 0 330px;
+	}
+	#state-indicator {
+		float: left;
+		font: 18px 'Arial', sans-serif;
+		width: 864px;
+		padding: 20px;
+		text-align: center;
+	}
+	#button-prev, #button-next {
+    float: left;
+    display: inline-block;
+    width: 80px;
+    height: 35px;
+	}
+	#slide-counter {
+    float: left;
+    text-align: center;
+    min-width: 80px;
+    border: 1px solid #000;
+    vertical-align: bottom;
+    display: inline-block;
+    height: 33px;
+	}
+	#current-slide {
+			margin-top: 7px;
+			border: 1px solid #8AD;
+			width: 35%;
+	}
+</style>
+ <body>
+	<div>
+		<iframe id="presentation" src="presentation/index.html"></iframe>
+		<div class="buttons">
+			<button id="button-prev">Prev</button>
+			<div id="slide-counter">
+				<input id="current-slide" type="text" size="3">
+				<span>/</span>
+				<span id="slide-count">0</span>
+			</div>
+			<button id="button-next">Next</button>
+		</div>
+	</div>
+	<p id="state-indicator">Presentation is not running yet</p>
+<script src="./public/js/zepto.min.js"></script>
+<script>
+	// var ispringPresentationConnector = {};
+	// ispringPresentationConnector.register = function(player) {
+	// 	var indicator = document.getElementById("state-indicator");
+	// 	indicator.innerHTML = "Presentation is running";
+	// };
+	// ispringPresentationConnector.register()
+
+
+	// var ispringPresentationConnector = {};
+	// ispringPresentationConnector.register = function(player) {
+	// 	var presentation = player.presentation();
+	// 	var playbackController = player.view().playbackController();
+	// 	var slidesCount = presentation.slides().count();
+	// 	initPlaybackControls(playbackController, slidesCount);
+	// 	initPlaybackControls(playbackController);
+	// };
+
+	// function initPlaybackControls(playbackController, slidesCount) {
+	// 	var prevBtn = document.getElementById("button-prev");
+	// 	prevBtn.onclick = function() {
+	// 			playbackController.gotoPreviousSlide();
+	// 	};
+
+	// 	document.getElementById("button-next").onclick = function() { 
+	// 		console.log('Next Click')
+	// 		playbackController.gotoNextSlide();
+	// 	};
+		
+  //   var slideCountLabel = document.getElementById("slide-count");
+  //   slideCountLabel.innerHTML = slidesCount.toString();
+  //   var slideNoInput = document.getElementById("current-slide");
+  //   playbackController.slideChangeEvent().addHandler(function(slideIndex) {
+	// 		slideNoInput.value = (slideIndex + 1).toString();
+	// 	});
+		
+  //   slideNoInput.onchange = function() {
+	// 		var currentSlideIndex = playbackController.currentSlideIndex();
+	// 		var nextSlideIndex = parseInt(slideNoInput.value) - 1;
+	// 		if (nextSlideIndex >= 0 && nextSlideIndex < slidesCount) {
+	// 			playbackController.gotoSlide(nextSlideIndex);
+	// 		} else {
+	// 			slideNoInput.value = (currentSlideIndex + 1).toString();
+	// 		}
+  //   };
+	// }
+	
+	var PLAY = "Play";
+	var PAUSE = "Pause";
+	var ispringPresentationConnector = {};
+	var playbackController;
+	var prevBtn = document.getElementById("button-prev");
+	var playPauseBtn = document.getElementById("play_pause");
+	var nextBtn = document.getElementById("button-next");
+
+	var timeLabel = document.getElementById("time");
+	var slideIndexLabel = document.getElementById("slideIndex");
+
+	var slidesCount;
+	var isPlayedPresentation;
+
+	ispringPresentationConnector.register = function (player) {
+	  var presentation = player.presentation();
+	  slidesCount = presentation.slides().count();
+	  playbackController = player.view().playbackController();
+
+	  changePlayPauseBtnState(presentation.settings().playback().autoStart());
+	  initPlaybackControllerEventsHandlers();
+	  initButtonsEventsHandlers();
+	};
+
+	function changePlayPauseBtnState(isPlayed) {
+	  if (isPlayedPresentation == isPlayed) {
+	    return;
+	  }
+
+	  isPlayedPresentation = isPlayed;
+	  playPauseBtn.innerHTML = (isPlayedPresentation) ? PAUSE : PLAY;
+	}
+
+	function initPlaybackControllerEventsHandlers() {
+	  playbackController.slideChangeEvent().addHandler(function (slideIndex) {
+	    slideIndexLabel.innerHTML = "Slide: " + (slideIndex + 1) + " of " + slidesCount;
+	  });
+
+	  playbackController.clock().tickEvent().addHandler(function (clock) {
+	    var timeOffset = clock.timestamp().timeOffset();
+	    var minutes = Math.floor(timeOffset / 60);
+	    var seconds = Math.round(timeOffset % 60);
+
+	    timeLabel.innerHTML = (minutes < 10) ? "0" + minutes : minutes;
+	    timeLabel.innerHTML += ":";
+	    timeLabel.innerHTML += (seconds < 10) ? "0" + seconds : seconds;
+	  });
+	}
+
+	function initButtonsEventsHandlers() {
+	  prevBtn.onclick = function () {
+	    playbackController.gotoPreviousSlide();
+	    changePlayPauseBtnState(true);
+	  };
+
+	  playPauseBtn.onclick = function () {
+	    if (isPlayedPresentation) {
+	      playPauseBtn.innerHTML = PLAY;
+	      playbackController.pause();
+	    } else {
+	      playPauseBtn.innerHTML = PAUSE;
+	      playbackController.play();
+	    }
+	    isPlayedPresentation = !isPlayedPresentation;
+	  };
+
+	  nextBtn.onclick = function () {
+	    playbackController.gotoNextSlide();
+	    changePlayPauseBtnState(true);
+	  };
+	}
+</script>
+</body>
+</html>
