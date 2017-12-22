@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import Pusher from 'pusher';
 
 class Prompt extends Component {
 	state = {
@@ -9,7 +10,17 @@ class Prompt extends Component {
 
 
 	componentDidMount() {
+		var pusher = new Pusher({
+			appId: '440607',
+			key: 'aaef902e40a3359d109c',
+			secret: '10630dfd613c224ad75d',
+			cluster: 'ap1',
+			encrypted: true
+		});
 		
+		pusher.trigger('my-channel', 'my-event', {
+			"message": "hello world"
+		});
 	}
 
 	componentWillUnmount() {

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<title>Teacher</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
 <link rel="stylesheet" type="text/css" href="public/css/reset.css">
 <style>
@@ -41,6 +42,9 @@
         border-radius: 5px;
         font-size: 14px;
     }
+		.current {
+			display: inline-block;
+		}
 
     #time, #slideIndex {
 			display: inline-block;
@@ -66,6 +70,11 @@
 			<div class="buttons">
 				<button id="prev"><<</button>
 				<button id="play_pause"></button>
+				<!-- <div class="current">
+					<input id="current-slide" type="text" size="3">
+					<span>/</span>
+					<span id="slide-count">0</span>
+				</div> -->
 				<button id="next">>></button>		
 			</div>
 			<div class="log">
@@ -79,14 +88,20 @@
 
 <!-- Pusher js -->
 <script>
-	Pusher.logToConsole = true;
+	var asd = function() {
+		playbackController.gotoNextSlide()
+		changePlayPauseBtnState(true)
+	}
+
+	Pusher.logToConsole = false;
 	var pusher = new Pusher('aaef902e40a3359d109c', {
 		cluster: 'ap1',
 		encrypted: true
 	});
 	var channel = pusher.subscribe('my-channel');
 	channel.bind('my-event', function(data) {
-		alert(data.message);
+		console.log(data.message);
+		asd()
 	});
 </script>
 
@@ -120,7 +135,7 @@
 	
 	// player stop&pause
 	function changePlayPauseBtnState(isPlayed) {
-		console.log('isPlayed:: ' + isPlayed)
+		// console.log('isPlayed:: ' + isPlayed)
 		if (isPlayedPresentation == isPlayed) {
 			return
 		}
