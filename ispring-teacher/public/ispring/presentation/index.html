@@ -15,46 +15,36 @@
 </head>
 <body>
 <script>
-	(function(){
+	(function() {
 		var ldr = new ispring.presenter.loader.CombinedPresentationLoaderWithAPI();
-		ldr.playerInitEvent().addHandler(function(player){
-			(function(player){
-	(function(player)
-{
-	function findConnector(win)
-	{
-		var retries = 0;
-		while (!win.ispringPresentationConnector && win.parent && win.parent != win)
-		{
-			++retries;
-			if (retries > 7)
-			{
-				return null;
-			}
-
-			win = win.parent;
-		}
-		return win.ispringPresentationConnector;
-	}
-
-	function getConnector()
-	{
-		var api = findConnector(window);
-		if (!api && window.opener && (typeof(window.opener) != "undefined"))
-		{
-			api = findConnector(window.opener);
-		}
-		return api;
-	}
-
-	var connector = getConnector();
-	if (connector)
-	{
-		connector.register(player);
-	}
-})(player);
-
-})(player);
+		ldr.playerInitEvent().addHandler(function(player) { (function(player) { (function(player) {
+					function findConnector(win) {
+						var retries = 0;
+						while (!win.ispringPresentationConnector && win.parent && win.parent != win) {++retries;
+							if (retries > 7) {
+								return null;
+							}
+	
+							win = win.parent;
+						}
+						return win.ispringPresentationConnector;
+					}
+	
+					function getConnector() {
+						var api = findConnector(window);
+						if (!api && window.opener && (typeof(window.opener) != "undefined")) {
+							api = findConnector(window.opener);
+						}
+						return api;
+					}
+	
+					var connector = getConnector();
+					if (connector) {
+						connector.register(player);
+					}
+				})(player);
+	
+			})(player);
 		});
 		ldr.load("data/movie.swf", "html5.html", "", "10.1.0", 720, 540);
 	})();
