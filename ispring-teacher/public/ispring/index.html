@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Leaner</title>
+<title>Teacher</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
 <link rel="stylesheet" type="text/css" href="public/css/reset.css">
 <style>
@@ -29,6 +29,9 @@
 			display: flex;
 			justify-content: space-between;
 			margin-top: 10px;
+		}
+		#end_time {
+			line-height: 30px;
 		}
 		.buttons, .log {}
 
@@ -65,10 +68,11 @@
 		<iframe id="frame" src="presentation/index.html"></iframe>
 		<div class="control">
 			<div class="buttons">
-				<button id="prev"><<</button>
+				<button id="prev"><</button>
 				<button id="play_pause"></button>
-				<button id="next">>></button>		
+				<button id="next">></button>		
 			</div>
+			<div id="end_time">课程结束倒计时 20' 00''</div>
 			<div class="log">
 				<p id="time"></p>
 				<p id="slideIndex"></p>
@@ -99,8 +103,9 @@
 
 <!-- Ispring js -->
 <script>
-	var PLAY = "Play"
-	var PAUSE = "Pause"
+	var PLAY = "播放"
+	var PAUSE = "暂停"
+	var COUNT_DOWN = 1200000
 	var playbackController
 	var prevBtn = document.getElementById("prev")
 	var playPauseBtn = document.getElementById("play_pause")
@@ -113,7 +118,7 @@
 	// player init
 	var ispringPresentationConnector = {}
 	ispringPresentationConnector.register = function(player) {
-		logger("Player Running...")
+		logger("Teacher Player Running...")
 		var presentation = player.presentation()
 		slidesCount = presentation.slides().count()
 		playbackController = player.view().playbackController()
@@ -121,7 +126,7 @@
 		initPlaybackControllerEventsHandlers()
 		initButtonsEventsHandlers()
 		player.view().playbackController().slideChangeEvent().addHandler(function(slideIndex) {
-      logger("Page :: " + slideIndex)
+      logger("Page : " + slideIndex)
     })
 	}
 	
@@ -174,6 +179,19 @@
 			isPlayedPresentation = !isPlayedPresentation
 		}
 	}
+
+	// 倒计时 1200000
+	function countDown() {
+		var timer = setInterval(function() {
+			COUNT_DOWN = COUNT_DOWN - 1000
+			var min = parseInt((COUNT_DOWN / 1000 / 60), 10)
+			var sec = parseInt((COUNT_DOWN - (min * 60 * 1000)) / 1000, 10)
+			document.getElementById("end_time").innerHTML = "课程结束倒计时 " + min + "' " + sec + "''"
+		}, 1000)
+	}
+	countDown()
+
+
 
 	// debug logger 
 	function logger(text) {

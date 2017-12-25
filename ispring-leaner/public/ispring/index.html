@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Teacher</title>
+<title>Learner</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
 <link rel="stylesheet" type="text/css" href="public/css/reset.css">
 <style>
@@ -68,14 +68,14 @@
 		<iframe id="frame" src="presentation/index.html"></iframe>
 		<div class="control">
 			<div class="buttons">
-				<button id="prev"><<</button>
+				<button id="prev"><</button>
 				<button id="play_pause"></button>
 				<!-- <div class="current">
 					<input id="current-slide" type="text" size="3">
 					<span>/</span>
 					<span id="slide-count">0</span>
 				</div> -->
-				<button id="next">>></button>		
+				<button id="next">></button>		
 			</div>
 			<div class="log">
 				<p id="time"></p>
@@ -107,8 +107,8 @@
 
 <!-- Ispring js -->
 <script>
-	var PLAY = "Play"
-	var PAUSE = "Pause"
+	var PLAY = "播放"
+	var PAUSE = "暂停"
 	var playbackController
 	var prevBtn = document.getElementById("prev")
 	var playPauseBtn = document.getElementById("play_pause")
@@ -121,7 +121,7 @@
 	// player init
 	var ispringPresentationConnector = {}
 	ispringPresentationConnector.register = function(player) {
-		logger("Player Running...")
+		logger("Learner Player Running...")
 		var presentation = player.presentation()
 		slidesCount = presentation.slides().count()
 		playbackController = player.view().playbackController()
