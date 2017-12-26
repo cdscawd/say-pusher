@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Learner Dev</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<link rel="stylesheet" type="text/css" href="public/css/reset.css">
+<link rel="stylesheet" type="text/css" href="public/css/index.css">
+<body>
+	
+	
+	<div id="container">
+		<iframe id="frame" src="presentation/index.html"></iframe>
+		<div class="control">
+			<div class="buttons">
+				<button id="prev">Prev Page</button>
+				<button id="next">Next Page</button>		
+				<button id="play_pause">播放动画</button>
+			</div>
+			<div id="end_time">课程结束倒计时 20' 00''</div>
+			<div class="log">
+				<p id="time"></p>
+				<p id="slideIndex"></p>
+			</div>	
+		</div>
+		<div id="logger"></div>
+	</div>
+
+
+<script src="https://js.pusher.com/4.1/pusher.min.js"></script>
+
+<!-- Pusher js -->
+<script>
+	var asd = function() {
+		playbackController.gotoNextSlide()
+		changePlayPauseBtnState(true)
+	}
+
+	Pusher.logToConsole = false;
+	var pusher = new Pusher('aaef902e40a3359d109c', {
+		cluster: 'ap1',
+		encrypted: true
+	});
+	var channel = pusher.subscribe('my-channel');
+	channel.bind('my-event', function(data) {
+		console.log(data.message);
+		asd()
+	});
+</script>
+
+<!-- Ispring js -->
+<script>
+	var PLAY = "播放动画"
+	var PAUSE = "暂停动画"
+	var COUNT_DOWN = 1200000
+	var playbackController
+	var prevBtn = document.getElementById("prev")
+	var playPauseBtn = document.getElementById("play_pause")
+	var nextBtn = document.getElementById("next")
+	var timeLabel = document.getElementById("time")
+	var slideIndexLabel = document.getElementById("slideIndex")
+	var slidesCount
+	var isPlayedPresentation
+
+	// player init
+	var ispringPresentationConnector = {}
+	ispringPresentationConnector.register = function(player) {
+		logger("Teacher Player Running...")
+		var presentation = player.presentation()
+		slidesCount = presentation.slides().count()
+		playbackController = player.view().playbackController()
+		initPlaybackControllerEventsHandlers()
+		initButtonsEventsHandlers()
+		player.view().playbackController().slideChangeEvent().addHandler(function(slideIndex) {
+      logger("Page : " + slideIndex)
+    })
+
+	}
+	
+	// player event
+	// Player-SDK/documentation/js-api/ispring.presenter.player.IPresentationPlaybackController.html#playbackState
+	function initPlaybackControllerEventsHandlers() {
+		playbackController.slideChangeEvent().addHandler(function(slideIndex) {
+			slideIndexLabel.innerHTML = "Slide: " + (slideIndex + 1) + " / " + slidesCount
+		})
+	
+		playbackController.clock().tickEvent().addHandler(function(clock) {
+			var timeOffset = clock.timestamp().timeOffset()
+			var minutes = Math.floor(timeOffset / 60)
+			var seconds = Math.round(timeOffset % 60)
+	
+			timeLabel.innerHTML = (minutes < 10) ? "0" + minutes: minutes
+			timeLabel.innerHTML += ":"
+			timeLabel.innerHTML += (seconds < 10) ? "0" + seconds: seconds
+		})
+	}
+	
+	// control button
+	function initButtonsEventsHandlers() {
+		prevBtn.onclick = function() {
+			playbackController.gotoPreviousSlide()
+			changePlayPauseBtnState(true)
+		}
+		nextBtn.onclick = function() {
+			playbackController.gotoNextSlide()
+			changePlayPauseBtnState(true)
+		}
+		playPauseBtn.onclick = function() {
+			playbackController.play()
+		}
+	}
+
+	// debug logger 
+	function logger(text) {
+    var logger = document.getElementById("logger")
+    logger.innerHTML = logger.innerHTML + text + '<br>'
+  }
+
+	// 倒计时 1200000
+	function countDown() {
+		var timer = setInterval(function() {
+			COUNT_DOWN = COUNT_DOWN - 1000
+			var min = parseInt((COUNT_DOWN / 1000 / 60), 10)
+			var sec = parseInt((COUNT_DOWN - (min * 60 * 1000)) / 1000, 10)
+			document.getElementById("end_time").innerHTML = "课程结束倒计时 " + min + "' " + sec + "''"
+		}, 1000)
+	}
+	countDown()
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+
+
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #e7fffd;
+  }
+  #container {
+    padding-top: 20px;
+    width: 800px;
+    height: 800px;
+    margin: 0 auto;
+  } 
+
+  iframe {
+    width: 100%;
+    height: 100%;
+  }
+  .control {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  #end_time {
+    line-height: 30px;
+  }
+  .buttons, .log {}
+
+  #prev, 
+  #play_pause, 
+  #next {
+      width: 80px;
+      height: 30px;
+      background: #F2F2F2;
+      border: 1px solid #7F7F7F;
+      border-radius: 5px;
+      font-size: 14px;
+  }
+
+  #time, #slideIndex {
+    display: inline-block;
+    line-height: 30px;
+  }
+  
+  #logger {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    padding: 10px;
+    background-color: rgba(0,0,0,0.4);
+    color: #fff;
+    width: 200px;
+    height: 200px;
+    overflow-y: scroll; 
+  }
+
+
+

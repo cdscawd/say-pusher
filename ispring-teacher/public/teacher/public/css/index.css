@@ -1,7 +1,4 @@
-
-
-
-    html, body {
+  html, body {
       width: 100%;
       height: 100%;
       margin: 0;
@@ -20,6 +17,33 @@
     border: 1px solid #000;
     height: 600px;
   }
+
+  .controller-box{
+    background-color: #c1c1c1;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .controller-box svg {
+    width: 40px;
+    height: 40px;
+  }
+  .prev_step svg {
+    transform: rotate(180deg);
+  }  
+  .prev_step svg,
+  .next_step svg{
+   
+  }
+  .interact-box div{
+    display: inline-block;
+    margin: 0 4px;
+  }
+
+
+
+
+
   .control {
     display: flex;
     justify-content: space-between;
@@ -30,15 +54,13 @@
   }
   .buttons, .log {}
 
-  #prev, 
-  #play_pause, 
-  #next {
-      width: 80px;
-      height: 30px;
-      background: #F2F2F2;
-      border: 1px solid #7F7F7F;
-      border-radius: 5px;
-      font-size: 14px;
+  .buttons button {
+    width: 80px;
+    height: 30px;
+    background: #F2F2F2;
+    border: 1px solid #7F7F7F;
+    border-radius: 5px;
+    font-size: 14px;
   }
 
   #time, #slideIndex {
