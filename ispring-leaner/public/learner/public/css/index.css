@@ -1,61 +1,109 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
 
+#container {
+/* width: 800px; */
+  height: inherit;
+  margin: 0 auto;
+}
 
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+.praise {
+  width: 120px;
+  position: absolute;
+  z-index: 999;
+  left: 50%;
+  top: 50%;
+  margin-left: -60px;
+  margin-top: -60px;
+  opacity: 0;
+}
 
-  html, body {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    background-color: #e7fffd;
-  }
-  #container {
-    padding-top: 20px;
-    width: 800px;
-    height: 800px;
-    margin: 0 auto;
-  } 
+.animated {
+  animation-duration: 1s;
+  animation-fill-mode: both;
+}
 
-  iframe {
-    width: 100%;
-    height: 100%;
-  }
-  .control {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-  }
-  #end_time {
-    line-height: 30px;
-  }
-  .buttons, .log {}
-
-  #prev, 
-  #play_pause, 
-  #next {
-      width: 80px;
-      height: 30px;
-      background: #F2F2F2;
-      border: 1px solid #7F7F7F;
-      border-radius: 5px;
-      font-size: 14px;
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
   }
 
-  #time, #slideIndex {
-    display: inline-block;
-    line-height: 30px;
+  to {
+    opacity: 1;
+    transform: none;
   }
-  
-  #logger {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
-    padding: 10px;
-    background-color: rgba(0,0,0,0.4);
-    color: #fff;
-    width: 200px;
-    height: 200px;
-    overflow-y: scroll; 
+}
+
+.fadeInUp {
+  animation-name: fadeInUp;
+}
+
+@keyframes fadeOutDown {
+  from {
+    opacity: 1;
   }
 
+  to {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+  }
+}
+
+.fadeOutDown {
+  animation-name: fadeOutDown;
+}
 
 
+.control {
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 30px;
+  line-height: 30px;
+}
+
+#end_time {
+  line-height: 30px;
+}
+
+.buttons, .log {
+}
+
+.buttons button {
+  width: 80px;
+  height: 30px;
+  background: #F2F2F2;
+  border: 1px solid #7F7F7F;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+#time, #slideIndex {
+  display: inline-block;
+  line-height: 30px;
+}
+
+#logger {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 10px;
+  background-color: rgba(0,0,0,0.4);
+  color: #fff;
+  width: 200px;
+  height: 200px;
+  overflow-y: scroll;
+}

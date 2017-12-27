@@ -69,10 +69,10 @@
 	var COUNT_DOWN = 1200000
 	var playbackController
 	var prevBtn = document.getElementById("prev")
+	var nextBtn = document.getElementById("next")
 	var playPrevStepBtn = document.getElementById("prev_step")
 	var playNextStepBtn = document.getElementById("next_step")
 	var gotoFirstSlide = document.getElementById("gotoFirstSlide")
-	var nextBtn = document.getElementById("next")
 	var timeLabel = document.getElementById("time")
 	var slideIndexLabel = document.getElementById("slideIndex")
 	var slidesCount
@@ -147,7 +147,6 @@
 	// 倒计时 1200000
 	function sessionCountDown() {
 		var min, sec, LOCAL_COUNT_DOWN
-
 		var timer = setInterval(function() {
 			var neadGet = (typeof localStorage.getItem('LOCAL_COUNT_DOWN')) == 'object' ? true : false
       if (neadGet) {
@@ -162,12 +161,11 @@
 			LOCAL_COUNT_DOWN = (min * 60 * 1000) + (sec * 1000)
 			window.localStorage.setItem('LOCAL_COUNT_DOWN', LOCAL_COUNT_DOWN)
 			if (sec < 0) {
-				alert('课程结束')
+				document.getElementById("end_time").innerHTML = "你的课程已经结束"
 				clearInterval(timer)
 			}
 		}, 1000)
 	}
-
 </script>
 </body>
 </html>

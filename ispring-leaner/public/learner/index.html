@@ -7,47 +7,30 @@
 <link rel="stylesheet" type="text/css" href="public/css/reset.css">
 <link rel="stylesheet" type="text/css" href="public/css/index.css">
 <body>
-	
-	
-	<div id="container">
-		<iframe id="frame" src="presentation/index.html"></iframe>
-		<div class="control">
-			<div class="buttons">
-				<button id="prev">Prev Page</button>
-				<button id="next">Next Page</button>		
-				<button id="play_pause">播放动画</button>
-			</div>
-			<div id="end_time">课程结束倒计时 20' 00''</div>
-			<div class="log">
-				<p id="time"></p>
-				<p id="slideIndex"></p>
-			</div>	
+<div id="container">
+	<iframe id="frame" src="presentation/index.html"></iframe>
+	<img class="praise " src="./public/images/praise.gif" alt="">
+
+	<div class="control">
+		<div class="buttons">
+			<button id="gotoFirstSlide">First Slide</button>
+			<button id="prev">Prev Slide</button>
+			<button id="next">Next Slide</button>		
+			<button id="prev_step">Prev Step</button>
+			<button id="next_step">Next Step</button>
+			<button id="praise">praise</button>
+			<button id="like">like</button>
 		</div>
-		<div id="logger"></div>
+		<div id="end_time">课程结束倒计时 20' 00''</div>
+		<div class="log">
+			<p id="time"></p>
+			<p id="slideIndex"></p>
+		</div>	
 	</div>
-
-
+	<div id="logger"></div>
+</div>
+<script src="http://zeptojs.com/zepto.min.js"></script>
 <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
-
-<!-- Pusher js -->
-<script>
-	var asd = function() {
-		playbackController.gotoNextSlide()
-		changePlayPauseBtnState(true)
-	}
-
-	Pusher.logToConsole = false;
-	var pusher = new Pusher('aaef902e40a3359d109c', {
-		cluster: 'ap1',
-		encrypted: true
-	});
-	var channel = pusher.subscribe('my-channel');
-	channel.bind('my-event', function(data) {
-		console.log(data.message);
-		asd()
-	});
-</script>
-
 <!-- Ispring js -->
 <script>
 	var PLAY = "播放动画"
@@ -55,12 +38,24 @@
 	var COUNT_DOWN = 1200000
 	var playbackController
 	var prevBtn = document.getElementById("prev")
-	var playPauseBtn = document.getElementById("play_pause")
 	var nextBtn = document.getElementById("next")
+	var playPrevStepBtn = document.getElementById("prev_step")
+	var playNextStepBtn = document.getElementById("next_step")
+	var gotoFirstSlide = document.getElementById("gotoFirstSlide")
 	var timeLabel = document.getElementById("time")
 	var slideIndexLabel = document.getElementById("slideIndex")
 	var slidesCount
 	var isPlayedPresentation
+
+	$('#praise').on('click', function() {
+		$('.praise').addClass('animated fadeInUp')
+		setTimeout(function() {
+			$('.praise').removeClass('fadeInUp').addClass('fadeOutDown')
+		},1000)
+		setTimeout(function() {
+			$('.praise').removeClass('animated fadeOutDown')
+		},1500)
+	})
 
 	// player init
 	var ispringPresentationConnector = {}
@@ -99,14 +94,19 @@
 	function initButtonsEventsHandlers() {
 		prevBtn.onclick = function() {
 			playbackController.gotoPreviousSlide()
-			changePlayPauseBtnState(true)
 		}
 		nextBtn.onclick = function() {
 			playbackController.gotoNextSlide()
-			changePlayPauseBtnState(true)
 		}
-		playPauseBtn.onclick = function() {
-			playbackController.play()
+		playPrevStepBtn.onclick = function() {
+			playbackController.gotoPreviousStep()
+		}
+		playNextStepBtn.onclick = function() {
+			// playbackController.play()
+			playbackController.gotoNextStep()
+		}
+		gotoFirstSlide.onclick = function() {
+			playbackController.gotoFirstSlide(false)
 		}
 	}
 
@@ -126,8 +126,6 @@
 		}, 1000)
 	}
 	countDown()
-
 </script>
-
 </body>
 </html>
