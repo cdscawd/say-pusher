@@ -62,7 +62,11 @@
 			authTransport: 'jsonp',
 			authEndpoint: 'http://192.168.0.103:8769/voip-web-api/pusher/auth'
 		});
-		channel = pusher.subscribe(channelName);
+		channel = pusher.subscribe(channelName)
+
+		$.post('http://192.168.0.103:8769/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+'1072_2932_34572', function(res){
+			console.log(res)
+		})
 	})
 
 	var PLAY = "播放动画"
