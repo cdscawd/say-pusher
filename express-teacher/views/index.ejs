@@ -12,8 +12,8 @@
   <div class="control">
     <div class="buttons">
       <button id="gotoFirstSlide">First Slide</button>
-      <button id="prev">Prev Slide</button>
-      <button id="next">Next Slide</button>		
+      <button id="prev_slide">Prev Slide</button>
+      <button id="next_slide">Next Slide</button>		
       <button id="prev_step">Prev Step</button>
       <button id="next_step">Next Step</button>
       <button id="praise">praise</button>
@@ -42,44 +42,35 @@
 	//Teacher: http://localhost:3002/teacher/session?sessionRequestId=58d1b23d602a4a0001e66f33&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34582&locale=en
 	// DEV Working Space
 
-	$(function() {
-		var pusher = {}
-		var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1];
-		var sessionEndAt = window.location.search.match(/sessionEndAt=(\S*)&lessonSlug/)[1];
-		var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1];
-		var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1];
-		
-		$.get('http://192.168.0.103:8769/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
-			pusher = res.data
-			console.log(pusher)
-			var pusherKey = res.data.pusherKey
-			var cluster = res.data.cluster
-			var channelName = res.data.channelName
+	var pusher = {}
+	var channel;
+	var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1];
+	var sessionEndAt = window.location.search.match(/sessionEndAt=(\S*)&lessonSlug/)[1];
+	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1];
+	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1];
+	
+	$.get('http://192.168.0.103:8769/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
+		pusher = res.data
+		var pusherKey = res.data.pusherKey
+		var cluster = res.data.cluster
+		var channelName = res.data.channelName
 
-			Pusher.logToConsole = true;
-			var pusher = new Pusher(pusherKey, {
-				cluster: cluster,
-				encrypted: true,
-				authTransport: 'jsonp',
-				authEndpoint: 'http://192.168.0.103:8769/voip-web-api/pusher/auth'
-			});
-			var channel = pusher.subscribe(channelName);
-
-			var context = { title: '1231231231123123213123132' };
-			var handler = function(){
-				console.log('My name is ' + this.title);
-			};
-			channel.bind(handler, context);
-			
-		})
+		Pusher.logToConsole = true;
+		var pusher = new Pusher(pusherKey, {
+			cluster: cluster,
+			encrypted: true,
+			authTransport: 'jsonp',
+			authEndpoint: 'http://192.168.0.103:8769/voip-web-api/pusher/auth'
+		});
+		channel = pusher.subscribe(channelName);
 	})
 
 	var PLAY = "播放动画"
 	var PAUSE = "暂停动画"
 	var COUNT_DOWN = 1200000
 	var playbackController
-	var prevBtn = document.getElementById("prev")
-	var nextBtn = document.getElementById("next")
+	var prevSlideBtn = document.getElementById("prev_slide")
+	var nextSlideBtn = document.getElementById("next_slide")
 	var playPrevStepBtn = document.getElementById("prev_step")
 	var playNextStepBtn = document.getElementById("next_step")
 	var gotoFirstSlide = document.getElementById("gotoFirstSlide")
@@ -131,21 +122,25 @@
 	}
 	// control button
 	function initButtonsEventsHandlers() {
-		prevBtn.onclick = function() {
+		prevSlideBtn.onclick = function() {
 			playbackController.gotoPreviousSlide()
+			channel.trigger("client-teacher-click", 'PREV_SLIDE')
 		}
-		nextBtn.onclick = function() {
+		nextSlideBtn.onclick = function() {
 			playbackController.gotoNextSlide()
+			channel.trigger("client-teacher-click", 'NEXT_SLIDE')
 		}
 		playPrevStepBtn.onclick = function() {
 			playbackController.gotoPreviousStep()
+			channel.trigger("client-teacher-click", 'PREV_STEP')
 		}
 		playNextStepBtn.onclick = function() {
-			// playbackController.play()
 			playbackController.gotoNextStep()
+			channel.trigger("client-teacher-click", 'NEXT_STEP')
 		}
 		gotoFirstSlide.onclick = function() {
 			playbackController.gotoFirstSlide(false)
+			channel.trigger("client-teacher-click", 'FIRST_SLIDE')
 		}
 	}
 
