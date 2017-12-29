@@ -2,15 +2,13 @@
 <html>
   <head>
     <title><%= main %></title>
-    <link rel="stylesheet" type="text/css" href="stylesheets/reset.css">
-    <link rel="stylesheet" type="text/css" href="stylesheets/index.css">
+    <link rel="stylesheet" type="text/css" href="static/stylesheets/reset.css">
+    <link rel="stylesheet" type="text/css" href="static/stylesheets/index.css">
   </head>
 <body>
-<% include header  %>
 <div id="container">
-  <iframe id="frame" src="curriculum/presentation"></iframe>
-  <img class="praise " src="./public/images/praise.gif" alt="">
-
+  <iframe id="frame" src="static/curriculum/presentation"></iframe>
+  <img class="praise " src="static/images/praise.gif" alt="">
   <div class="control">
     <div class="buttons">
       <button id="gotoFirstSlide">First Slide</button>
@@ -33,6 +31,49 @@
 <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
 <!-- Ispring js -->
 <script>
+	/**
+	* 	sessionRequestId=58d1b23d602a4a0001e66f33
+	* 	sessionStartAt=1507073590164
+	* 	sessionEndAt=1507679587594
+	* 	lessonSlug=1072_2932_34582
+			// http://localhost:8000/learner?sessionRequestId=58d1b23d602a4a0001e66ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34572
+	*/
+	//Learner: http://localhost:3000/v1/qoocoSessions/learner?sessionRequestId=58d1b23d602a4a0001e66f33&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34582&locale=zh_CN
+	//Teacher: http://localhost:3002/teacher/session?sessionRequestId=58d1b23d602a4a0001e66f33&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34582&locale=en
+	// DEV Working Space
+
+	$(function() {
+		var pusher = {}
+		var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1];
+		var sessionEndAt = window.location.search.match(/sessionEndAt=(\S*)&lessonSlug/)[1];
+		var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1];
+		var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1];
+		
+		$.get('http://192.168.0.103:8769/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
+			pusher = res.data
+			console.log(pusher)
+			var pusherKey = res.data.pusherKey
+			var cluster = res.data.cluster
+			var channelName = res.data.channelName
+
+			Pusher.logToConsole = true;
+			var pusher = new Pusher(pusherKey, {
+				cluster: cluster,
+				encrypted: true,
+				authTransport: 'jsonp',
+				authEndpoint: 'http://192.168.0.103:8769/voip-web-api/pusher/auth'
+			});
+			var channel = pusher.subscribe(channelName);
+
+			var context = { title: '1231231231123123213123132' };
+			var handler = function(){
+				console.log('My name is ' + this.title);
+			};
+			channel.bind(handler, context);
+			
+		})
+	})
+
 	var PLAY = "播放动画"
 	var PAUSE = "暂停动画"
 	var COUNT_DOWN = 1200000
@@ -66,10 +107,10 @@
 		playbackController = player.view().playbackController()
 		initPlaybackControllerEventsHandlers()
 		initButtonsEventsHandlers()
+		sessionCountDown()
 		player.view().playbackController().slideChangeEvent().addHandler(function(slideIndex) {
-      logger("Page : " + slideIndex)
-    })
-
+			logger("Page : " + slideIndex)
+		})
 	}
 	
 	// player event
@@ -83,13 +124,11 @@
 			var timeOffset = clock.timestamp().timeOffset()
 			var minutes = Math.floor(timeOffset / 60)
 			var seconds = Math.round(timeOffset % 60)
-	
 			timeLabel.innerHTML = (minutes < 10) ? "0" + minutes: minutes
 			timeLabel.innerHTML += ":"
 			timeLabel.innerHTML += (seconds < 10) ? "0" + seconds: seconds
 		})
 	}
-	
 	// control button
 	function initButtonsEventsHandlers() {
 		prevBtn.onclick = function() {
@@ -112,20 +151,32 @@
 
 	// debug logger 
 	function logger(text) {
-    var logger = document.getElementById("logger")
-    logger.innerHTML = logger.innerHTML + text + '<br>'
-  }
+		var logger = document.getElementById("logger")
+		logger.innerHTML = logger.innerHTML + text + '<br>'
+	}
 
 	// 倒计时 1200000
-	function countDown() {
+	function sessionCountDown() {
+		var min, sec, LOCAL_COUNT_DOWN
 		var timer = setInterval(function() {
-			COUNT_DOWN = COUNT_DOWN - 1000
-			var min = parseInt((COUNT_DOWN / 1000 / 60), 10)
-			var sec = parseInt((COUNT_DOWN - (min * 60 * 1000)) / 1000, 10)
-			document.getElementById("end_time").innerHTML = "你的课程已经结束"
+			var neadGet = (typeof localStorage.getItem('LOCAL_COUNT_DOWN')) == 'object' ? true : false
+			if (neadGet) {
+				COUNT_DOWN = COUNT_DOWN - 1000
+			} else {
+				COUNT_DOWN = parseInt(localStorage.getItem('LOCAL_COUNT_DOWN'), 10)
+				COUNT_DOWN = COUNT_DOWN - 1000
+			}
+			min = parseInt((COUNT_DOWN / 1000 / 60), 10)
+			sec = parseInt((COUNT_DOWN - (min * 60 * 1000)) / 1000, 10)
+			document.getElementById("end_time").innerHTML = "课程结束倒计时 " + min + "' " + sec + "''"
+			LOCAL_COUNT_DOWN = (min * 60 * 1000) + (sec * 1000)
+			window.localStorage.setItem('LOCAL_COUNT_DOWN', LOCAL_COUNT_DOWN)
+			if (sec < 0) {
+				document.getElementById("end_time").innerHTML = "你的课程已经结束"
+				clearInterval(timer)
+			}
 		}, 1000)
 	}
-	countDown()
 </script>
-  </body>
+</body>
 </html>
