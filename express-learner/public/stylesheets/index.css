@@ -17,15 +17,16 @@ iframe {
   border: none;
 }
 .praise, .like {
-  width: 120px;
+  width: 30%;
   position: absolute;
   z-index: 999;
   left: 50%;
   top: 50%;
-  margin-left: -60px;
-  margin-top: -60px;
+  margin-left: -15%;
+  margin-top: -15%;
   opacity: 0;
 }
+
 .animated {
   animation-duration: 1s;
   animation-fill-mode: both;

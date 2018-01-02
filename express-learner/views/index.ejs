@@ -3,7 +3,18 @@
   <head>
     <title><%= main %></title>
     <link rel="stylesheet" type="text/css" href="static/stylesheets/reset.css">
-    <link rel="stylesheet" type="text/css" href="static/stylesheets/index.css">
+		<link rel="stylesheet" type="text/css" href="static/stylesheets/index.css">
+		<script>
+			window.onload = function() { 
+				var neadReload = (typeof JSON.parse(sessionStorage.getItem('log'))) == 'object' ? true : false
+				if (neadReload) {
+					sessionStorage.setItem('log', Date.parse(new Date()))
+					location.reload()
+				} else {
+					sessionStorage.removeItem('log')
+				}
+			}
+		</script>
   </head>
 <body>
 <div id="container">
@@ -26,7 +37,7 @@
       <p id="slideIndex"></p>
     </div>	
   </div>
-  <div id="logger"></div>
+  <div id="logger" style="display: none;"></div>
 </div>
 <script src="http://zeptojs.com/zepto.min.js"></script>
 <script src="https://js.pusher.com/4.1/pusher.min.js"></script>

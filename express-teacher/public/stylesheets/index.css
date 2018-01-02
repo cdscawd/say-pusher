@@ -3,19 +3,71 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  background-color: #eee;
 }
 
-#container {
-/* width: 800px; */
+#main {
   height: inherit;
+  margin: 0 auto;
+}
+.container {
+  width: 720px;
   margin: 0 auto;
 }
 
 iframe {
-  width: 100%;
-  height: 100%;
+  display: block;
+  width: 720px;
+  height: 540px;
+  margin: 40px auto 0;
   border: none;
 }
+
+.control-box {
+  padding: 10px;
+}
+
+.control-box .container {
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(0, 0, 0, 0.08);
+  padding: 6px 10px;
+}
+.control-box #prev_step,
+.control-box #next_step {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+.encourage #praise,
+.encourage #like {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+.control-box #prev_step {
+  background: url('../images/prev.png') no-repeat center / cover;
+}
+.control-box #next_step {
+  background: url('../images/next.png') no-repeat center / cover;
+}
+.encourage div {
+  display: inline-block;
+}
+.encourage #praise {
+  background: url('../images/praise.png') no-repeat center / cover;
+  margin: 5px 4px;
+}
+.encourage #like {
+  background: url('../images/heart.png') no-repeat center / cover;
+  margin: 5px 4px;
+}
+
+
+
+
+
+
 .praise, .like {
   width: 120px;
   position: absolute;
@@ -94,20 +146,21 @@ iframe {
 .control {
   display: flex;
   justify-content: space-between;
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
   height: 30px;
   line-height: 30px;
 }
-
+.control-box {
+  max-width: 1267px;
+  margin: 0 auto;
+}
 #end_time {
   line-height: 30px;
 }
-
+.buttons , #end_time, .log {
+  display: inline-block;
+}
 .buttons button {
-  width: 80px;
+  padding: 0 10px;
   height: 30px;
   background: #F2F2F2;
   border: 1px solid #7F7F7F;
@@ -127,7 +180,34 @@ iframe {
   padding: 10px;
   background-color: rgba(0,0,0,0.4);
   color: #fff;
-  width: 200px;
+  width: 240px;
   height: 200px;
   overflow-y: scroll;
+}
+#logger p {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 6px;
+}
+#logger table {
+  width: 100%;
+}
+#logger tr {
+  height: 30px;
+  line-height: 30px;
+}
+#logger tr td {
+  padding: 0;
+  margin: 0;
+}
+#logger tr td  {
+  display: inline-block;
+}
+#logger tr td:first-child {
+  width: 60%;
+}
+#logger tr td:last-child {
+  width: 40%;
 }
