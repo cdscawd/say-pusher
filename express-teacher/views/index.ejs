@@ -132,7 +132,7 @@
 	function ClosureSession() {
 		$('#next_step').hide()
 		$('#close_session').show()
-	}
+	} 
 	$('#close_session').on('click', function(){
 		$.post('http://192.168.0.102:8769/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
 			console.log('结束回话')
