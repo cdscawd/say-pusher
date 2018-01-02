@@ -79,37 +79,6 @@
 	var sessionEndAt = window.location.search.match(/sessionEndAt=(\S*)&lessonSlug/)[1];
 	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1];
 	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1];
-	
-	$.get('http://192.168.0.102:8769/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
-		pusher = res.data
-		var pusherKey = res.data.pusherKey
-		var cluster = res.data.cluster
-		var channelName = res.data.channelName
-
-		Pusher.logToConsole = true;
-		var pusher = new Pusher(pusherKey, {
-			cluster: cluster,
-			encrypted: true,
-			authTransport: 'jsonp',
-			authEndpoint: 'http://192.168.0.102:8769/voip-web-api/pusher/auth'
-		});
-		channel = pusher.subscribe(channelName)
-		
-		// $.post('http://192.168.0.102:8769/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+lessonSlug, function(res){
-		$.post('http://192.168.0.102:8769/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+'1072_2932_34572', function(res){
-			if (res.status === 200) {
-				return
-			}
-		})
-	})
-
-	// 结束会话
-	function ClosureSession() {
-		$.post('http://192.168.0.102:8769/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
-			console.log(res)
-			console.log('结束回话')
-		})
-	}
 
 	var PLAY = "播放动画"
 	var PAUSE = "暂停动画"
@@ -124,6 +93,48 @@
 	var slideIndexLabel = document.getElementById("slideIndex")
 	var slidesCount
 	var isPlayedPresentation
+	var ispringPresentationConnector = {}
+	
+	$.get('http://192.168.0.102:8769/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
+		var status = res.status
+		if (status === 200) { 
+			pusher = res.data
+			var pusherKey = res.data.pusherKey
+			var cluster = res.data.cluster
+			var channelName = res.data.channelName
+
+			Pusher.logToConsole = true;
+			var pusher = new Pusher(pusherKey, {
+				cluster: cluster,
+				encrypted: true,
+				authTransport: 'jsonp',
+				authEndpoint: 'http://192.168.0.102:8769/voip-web-api/pusher/auth'
+			});
+			channel = pusher.subscribe(channelName)
+			
+			// $.post('http://192.168.0.102:8769/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+lessonSlug, function(res){
+			$.post('http://192.168.0.102:8769/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+'1072_2932_34572', function(res){
+				if (res.status === 200) {
+					return
+				}
+			})
+			
+			playerInit()
+		} else if(status === 400) {
+			$('#frame').attr('src', '')
+			localStorage.clear()
+			location.replace('/sessionend')
+		}
+	})
+
+	// 结束会话
+	function ClosureSession() {
+		$.post('http://192.168.0.102:8769/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
+			console.log('结束回话')
+			localStorage.clear()
+			location.replace('/sessionend')
+		})
+	}
 
 	// praise 点赞
 	$('#praise').on('click', function() {
@@ -149,26 +160,26 @@
 	})
 
 	// player init
-	var ispringPresentationConnector = {}
-	ispringPresentationConnector.register = function(player) {
-		$('#end_time').text("Running...")
-		var presentation = player.presentation()
-		slidesCount = presentation.slides().count()
-		playbackController = player.view().playbackController()
-		initPlaybackControllerEventsHandlers()
-		initButtonsEventsHandlers(slidesCount)
-		sessionCountDown()
-		player.view().playbackController().slideChangeEvent().addHandler(function(slideIndex) {
-			//logger("Index Page : " + slideIndex)
-		})
+	function playerInit() { 
+		ispringPresentationConnector.register = function(player) {
+			$('#end_time').text("Running...")
+			var presentation = player.presentation()
+			slidesCount = presentation.slides().count()
+			playbackController = player.view().playbackController()
+			initPlaybackControllerEventsHandlers()
+			initButtonsEventsHandlers(slidesCount)
+			sessionCountDown()
+			player.view().playbackController().slideChangeEvent().addHandler(function(slideIndex) {
+				//logger("Index Page : " + slideIndex)
+			})
+		}
 	}
 	
 	// player event
 	// Player-SDK/documentation/js-api/ispring.presenter.player.IPresentationPlaybackController.html#playbackState
 	function initPlaybackControllerEventsHandlers() {
 		playbackController.slideChangeEvent().addHandler(function(slideIndex) {
-			// slideIndexLabel.innerHTML = "Slide: <span class='slide_index'>" + (slideIndex + 1) + "</span> / " + slidesCount
-			$('#slide_index').text(slideIndex)
+			$('#slide_index').text(slideIndex + 1)
 			$('#slideCount').text(slidesCount)
 		})
 	
@@ -190,9 +201,7 @@
 		nextSlideBtn.onclick = function() {
 			playbackController.gotoNextSlide()
 			channel.trigger("client-teacher-click", 'NEXT_SLIDE')
-			var slideIndex = $('.slide_index').text()
-			console.log('slidesCount::' + slidesCount)
-			console.log('slideIndex::' + slideIndex)
+			var slideIndex = $('#slide_index').text()
 			if (slideIndex == slidesCount) {
 				ClosureSession()
 			}
@@ -204,9 +213,7 @@
 		playNextStepBtn.onclick = function() {
 			playbackController.gotoNextStep()
 			channel.trigger("client-teacher-click", 'NEXT_STEP')
-			var slideIndex = $('.slide_index').text()
-			console.log('slidesCount::' + slidesCount)
-			console.log('slideIndex::' + slideIndex)
+			var slideIndex = $('#slide_index').text()
 			if (slideIndex == slidesCount) {
 				ClosureSession()
 			}
@@ -219,7 +226,7 @@
 
 	// debug logger 
 	function logger(text) {
-		var logger = document.getElementById("logger")
+		// var logger = document.getElementById("logger")
 		// logger.innerHTML = logger.innerHTML + text + '<br>'
 		//logger.innerHTML =  text 
 	}
