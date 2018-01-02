@@ -9,6 +9,7 @@
 <div id="container">
   <iframe id="frame" src="static/curriculum/presentation"></iframe>
   <img class="praise " src="static/images/praise.gif" alt="">
+  <img class="like " src="static/images/like.gif" alt="">
   <div class="control">
     <div class="buttons">
       <button id="gotoFirstSlide">First Slide</button>
@@ -18,6 +19,7 @@
       <button id="next_step">Next Step</button>
       <button id="praise">praise</button>
       <button id="like">like</button>
+      <button id="like">结束会话</button>
     </div>
     <div id="end_time">课程结束倒计时 20' 00''</div>
     <div class="log">
@@ -36,10 +38,8 @@
 	* 	sessionStartAt=1507073590164
 	* 	sessionEndAt=1507679587594
 	* 	lessonSlug=1072_2932_34582
-			// http://localhost:8000/learner?sessionRequestId=58d1b23d602a4a0001e66ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34572
+	// http://localhost:8001/teacher?sessionRequestId=58d1b23d602a4a0001e66ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34572
 	*/
-	//Learner: http://localhost:3000/v1/qoocoSessions/learner?sessionRequestId=58d1b23d602a4a0001e66f33&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34582&locale=zh_CN
-	//Teacher: http://localhost:3002/teacher/session?sessionRequestId=58d1b23d602a4a0001e66f33&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34582&locale=en
 	// DEV Working Space
 
 	var pusher = {}
@@ -49,7 +49,7 @@
 	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1];
 	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1];
 	
-	$.get('http://192.168.0.103:8769/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
+	$.get('http://192.168.0.102:8769/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
 		pusher = res.data
 		var pusherKey = res.data.pusherKey
 		var cluster = res.data.cluster
@@ -60,12 +60,15 @@
 			cluster: cluster,
 			encrypted: true,
 			authTransport: 'jsonp',
-			authEndpoint: 'http://192.168.0.103:8769/voip-web-api/pusher/auth'
+			authEndpoint: 'http://192.168.0.102:8769/voip-web-api/pusher/auth'
 		});
 		channel = pusher.subscribe(channelName)
-
-		$.post('http://192.168.0.103:8769/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+'1072_2932_34572', function(res){
-			console.log(res)
+		
+		// $.post('http://192.168.0.102:8769/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+lessonSlug, function(res){
+		$.post('http://192.168.0.102:8769/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+'1072_2932_34572', function(res){
+			if (res.status === 200) {
+				return
+			}
 		})
 	})
 
@@ -83,13 +86,26 @@
 	var slidesCount
 	var isPlayedPresentation
 
+	// praise 点赞
 	$('#praise').on('click', function() {
-		$('.praise').addClass('animated fadeInUp')
+		channel.trigger("client-teacher-click", 'PRAISE')
+		$('.praise').addClass('animated bounceIn')
 		setTimeout(function() {
-			$('.praise').removeClass('fadeInUp').addClass('fadeOutDown')
+			$('.praise').removeClass('bounceIn').addClass('bounceOut')
 		},1000)
 		setTimeout(function() {
-			$('.praise').removeClass('animated fadeOutDown')
+			$('.praise').removeClass('animated bounceOut')
+		},1500)
+	})
+	// 喜欢 like
+	$('#like').on('click', function() {
+		channel.trigger("client-teacher-click", 'LIKE')
+		$('.like').addClass('animated bounceIn')
+		setTimeout(function() {
+			$('.like').removeClass('bounceIn').addClass('bounceOut')
+		},1000)
+		setTimeout(function() {
+			$('.like').removeClass('animated bounceOut')
 		},1500)
 	})
 

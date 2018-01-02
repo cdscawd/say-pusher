@@ -9,7 +9,8 @@
 <div id="container">
   <iframe id="frame" src="static/curriculum/presentation"></iframe>
   <img class="praise " src="static/images/praise.gif" alt="">
-  <div class="control">
+  <img class="like " src="static/images/like.gif" alt="">
+  <div class="control" style="display: none;">
     <div class="buttons">
       <button id="gotoFirstSlide">First Slide</button>
       <button id="prev_slide">Prev Slide</button>
@@ -36,10 +37,8 @@
 	* 	sessionStartAt=1507073590164
 	* 	sessionEndAt=1507679587594
 	* 	lessonSlug=1072_2932_34582
-			// http://localhost:8000/learner?sessionRequestId=58d1b23d602a4a0001e66ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34572
+	// http://localhost:8000/learner?sessionRequestId=58d1b23d602a4a0001e66ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34572
 	*/
-	//Learner: http://localhost:3000/v1/qoocoSessions/learner?sessionRequestId=58d1b23d602a4a0001e66f33&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34582&locale=zh_CN
-	//Teacher: http://localhost:3002/teacher/session?sessionRequestId=58d1b23d602a4a0001e66f33&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34582&locale=en
 	// DEV Working Space
 
 	var pusher = {}
@@ -49,41 +48,49 @@
 	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1];
 	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1];
 	
-	$.get('http://192.168.0.103:8769/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
-		pusher = res.data
-		var pusherKey = res.data.pusherKey
-		var cluster = res.data.cluster
-		var channelName = res.data.channelName
+	$.get('http://192.168.0.102:8769/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
+		if (res.status === 200) { 
+			pusher = res.data
+			var pusherKey = res.data.pusherKey
+			var cluster = res.data.cluster
+			var channelName = res.data.channelName
 
-		Pusher.logToConsole = true;
-		var pusher = new Pusher(pusherKey, {
-			cluster: cluster,
-			encrypted: true,
-			authTransport: 'jsonp',
-			authEndpoint: 'http://192.168.0.103:8769/voip-web-api/pusher/auth'
-		});
-		channel = pusher.subscribe(channelName);
-		channel.bind('client-teacher-click', function (data) {
-			var EVENT_TYPE = data
-			switch (EVENT_TYPE) {
-				case 'NEXT_STEP':
-					$('#next_step').trigger("click"); 
-					break;
-				case 'PREV_STEP':
-					$('#prev_step').trigger("click"); 
-					break;
-				case 'NEXT_SLIDE':
-					$('#next_slide').trigger("click"); 
-					break;
-				case 'PREV_SLIDE':
-					$('#prev_slide').trigger("click"); 
-					break;
-				case 'FIRST_SLIDE':
-					$('#gotoFirstSlide').trigger("click"); 
-					break;
-				default: break;
-			}
-		});
+			Pusher.logToConsole = true;
+			var pusher = new Pusher(pusherKey, {
+				cluster: cluster,
+				encrypted: true,
+				authTransport: 'jsonp',
+				authEndpoint: 'http://192.168.0.102:8769/voip-web-api/pusher/auth'
+			});
+			channel = pusher.subscribe(channelName);
+
+			channel.bind('client-teacher-click', function (data) {
+				var EVENT_TYPE = data
+				switch (EVENT_TYPE) {
+					case 'NEXT_STEP':
+						$('#next_step').trigger("click"); 
+						break;
+					case 'PREV_STEP':
+						$('#prev_step').trigger("click"); 
+						break;
+					case 'NEXT_SLIDE':
+						$('#next_slide').trigger("click"); 
+						break;
+					case 'PREV_SLIDE':
+						$('#prev_slide').trigger("click"); 
+						break;
+					case 'FIRST_SLIDE':
+						$('#gotoFirstSlide').trigger("click"); 
+						break;
+					case 'PRAISE':
+						$('#praise').trigger("click"); 
+						break;
+					case 'LIKE':
+						$('#like').trigger("click"); 
+						break;
+				}
+			});
+		}
 	})
 
 	var PLAY = "播放动画"
@@ -99,14 +106,25 @@
 	var slideIndexLabel = document.getElementById("slideIndex")
 	var slidesCount
 	var isPlayedPresentation
-
+	// praise 点赞
 	$('#praise').on('click', function() {
-		$('.praise').addClass('animated fadeInUp')
+		$('.praise').addClass('animated bounceIn')
 		setTimeout(function() {
-			$('.praise').removeClass('fadeInUp').addClass('fadeOutDown')
+			$('.praise').removeClass('bounceIn').addClass('bounceOut')
 		},1000)
 		setTimeout(function() {
-			$('.praise').removeClass('animated fadeOutDown')
+			$('.praise').removeClass('animated bounceOut')
+		},1500)
+	})
+	// 喜欢 like
+	$('#like').on('click', function() {
+		channel.trigger("client-teacher-click", 'LIKE')
+		$('.like').addClass('animated bounceIn')
+		setTimeout(function() {
+			$('.like').removeClass('bounceIn').addClass('bounceOut')
+		},1000)
+		setTimeout(function() {
+			$('.like').removeClass('animated bounceOut')
 		},1500)
 	})
 
