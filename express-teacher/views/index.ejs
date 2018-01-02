@@ -27,6 +27,7 @@
 				<div id="like"></div>
 			</div>			
 			<div id="next_step"></div>
+			<button id="close_session" style="display: none;">Close Session</button>
 		</div>
 	</div>
   <img class="praise " src="static/images/praise.gif" alt="">
@@ -129,12 +130,16 @@
 
 	// 结束会话
 	function ClosureSession() {
+		$('#next_step').hide()
+		$('#close_session').show()
+	}
+	$('#close_session').on('click', function(){
 		$.post('http://192.168.0.102:8769/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
 			console.log('结束回话')
 			localStorage.clear()
 			location.replace('/sessionend')
 		})
-	}
+	})
 
 	// praise 点赞
 	$('#praise').on('click', function() {
