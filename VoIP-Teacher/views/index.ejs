@@ -121,6 +121,7 @@
 			})
 		} else if(status === 400) {
 			$('#iframe').attr('src', '')
+			localStorage.removeItem('LOCAL_COUNT_DOWN')
 			localStorage.clear()
 			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
 		}
@@ -136,6 +137,7 @@
 		$('#gotoFirstSlide').trigger("click") 
 		$.post(IP + '/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
 			console.log('结束回话')
+			localStorage.removeItem('LOCAL_COUNT_DOWN')
 			localStorage.clear()
 			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
 		})
