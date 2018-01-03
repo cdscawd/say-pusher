@@ -18,7 +18,7 @@
   </head>
 <body>
 <div id="container">
-  <iframe id="iframe" src=""></iframe>
+  <iframe id="iframe" src="static/curriculum/Qooco-KB-A01"></iframe>
   <img class="praise " src="static/images/praise.gif" alt="">
   <img class="like " src="static/images/like.gif" alt="">
   <div class="control" style="display: none;">
@@ -52,7 +52,8 @@
 	//  http://localhost:8000/learner?sessionRequestId=58d1b23d602a4a0161e17ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1247_4907_43490
 	*/
 	// DEV Working Space
-	var IP = 'http://192.168.0.100:8769'
+	// var IP = 'http://192.168.0.100:8769'
+	var IP = 'https://open.api.qooco.com'
 	var pusher = {}
 	var channel
 	var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1]

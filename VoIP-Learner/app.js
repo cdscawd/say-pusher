@@ -18,7 +18,7 @@ app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
 // https://expressjs.com/zh-cn/starter/static-files.html
-app.use(favicon(path.join(__dirname, 'public/images', 'favicon.png')));
+// app.use(favicon(path.join(__dirname, 'public/images', 'favicon.png')));
 app.use(logger('dev')); //日志中间件
 app.use(bodyParser.json()); //解析json的中间件
 app.use(bodyParser.urlencoded({ extended: false }));  //解析urlencoded请求体的中间件
