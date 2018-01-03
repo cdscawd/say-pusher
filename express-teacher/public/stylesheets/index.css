@@ -186,7 +186,7 @@ iframe {
   right: 10px;
   bottom: 10px;
   padding: 10px;
-  z-index: 100;
+  z-index: 10;
   background-color: rgba(0,0,0,0.4);
   color: #fff;
   width: 240px;

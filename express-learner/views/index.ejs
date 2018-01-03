@@ -38,7 +38,7 @@
     </div>	
   </div>
 	<div id="logger" style="display: none;"></div>
-	<div id="Mask"></div>
+	<div id="Mask">Loading...</div>
 </div>
 <script src="http://zeptojs.com/zepto.min.js"></script>
 <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
@@ -49,60 +49,70 @@
 	* 	sessionStartAt=1507073590164
 	* 	sessionEndAt=1507679587594
 	* 	lessonSlug=1072_2932_34582
-	// http://localhost:8000/learner?sessionRequestId=58d1b23d602a4a0001e66ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34572
+	//  http://localhost:8000/learner?sessionRequestId=58d1b23d602a4a0161e17ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1247_4907_43490
 	*/
 	// DEV Working Space
 	var IP = 'http://192.168.0.100:8769'
 	var pusher = {}
-	var channel;
-	var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1];
-	var sessionEndAt = window.location.search.match(/sessionEndAt=(\S*)&lessonSlug/)[1];
-	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1];
-	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1];
+	var channel
+	var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1]
+	var sessionEndAt = window.location.search.match(/sessionEndAt=(\S*)&lessonSlug/)[1]
+	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1]
+	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1]
 	
 	$.get(IP + '/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
-		if (res.status === 200) { 
+		var status = res.status
+		if (status === 200) {
 			pusher = res.data
 			var pusherKey = pusher.pusherKey
 			var cluster = pusher.cluster
 			var channelName = pusher.channelName
 			$('#iframe').attr('src', 'static/curriculum/' + pusher.lessonLevel)
 
-			Pusher.logToConsole = true;
+			Pusher.logToConsole = true
 			var pusher = new Pusher(pusherKey, {
 				cluster: cluster,
 				encrypted: true,
 				authTransport: 'jsonp',
 				authEndpoint: IP + '/voip-web-api/pusher/auth'
-			});
-			channel = pusher.subscribe(channelName);
+			})
+			channel = pusher.subscribe(channelName)
 
 			channel.bind('client-teacher-click', function (data) {
 				var EVENT_TYPE = data
 				switch (EVENT_TYPE) {
 					case 'NEXT_STEP':
-						$('#next_step').trigger("click"); 
-						break;
+						$('#next_step').trigger("click") 
+						break
 					case 'PREV_STEP':
-						$('#prev_step').trigger("click"); 
-						break;
+						$('#prev_step').trigger("click") 
+						break
 					case 'NEXT_SLIDE':
-						$('#next_slide').trigger("click"); 
-						break;
+						$('#next_slide').trigger("click") 
+						break
 					case 'PREV_SLIDE':
-						$('#prev_slide').trigger("click"); 
-						break;
+						$('#prev_slide').trigger("click") 
+						break
 					case 'FIRST_SLIDE':
-						$('#gotoFirstSlide').trigger("click"); 
-						break;
+						$('#gotoFirstSlide').trigger("click") 
+						break
 					case 'PRAISE':
-						$('#praise').trigger("click"); 
-						break;
+						$('#praise').trigger("click") 
+						break
 					case 'LIKE':
-						$('#like').trigger("click"); 
-						break;
+						$('#like').trigger("click") 
+						break
+					case 'CLOSE_SESSION':
+						$('#gotoFirstSlide').trigger("click") 
+						localStorage.clear()
+						location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+						break
 				}
-			});
+			})
+		} else if (status === 400) {
+			$('#iframe').attr('src', '')
+			localStorage.clear()
+			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
 		}
 	})
 

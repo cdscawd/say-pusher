@@ -41,7 +41,7 @@
 			<button id="next_step">Next Step</button> -->
 			<!-- <button id="praise">praise</button>
 			<button id="like">like</button> -->
-			<button id="end_session" style="display: none;">Closure Session</button>
+			<!-- <button id="end_session" style="display: none;">Closure Session</button> -->
 		</div>
 		<!-- <div id="end_time">课程结束倒计时 20' 00''</div> -->
 		<div class="log">
@@ -71,7 +71,7 @@
 	* 	sessionStartAt=1507073590164
 	* 	sessionEndAt=1507679587594
 	* 	lessonSlug=1072_2932_34582
-	// http://localhost:8001/teacher?sessionRequestId=58d1b23d602a4a0001e66ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34572
+	//  http://localhost:8001/teacher?sessionRequestId=58d1b23d602a4a0161e17ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1247_4907_43490
 	*/
 	// DEV Working Space
 	var IP = 'http://192.168.0.100:8769'
@@ -122,7 +122,7 @@
 		} else if(status === 400) {
 			$('#iframe').attr('src', '')
 			localStorage.clear()
-			location.replace('/sessionend')
+			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
 		}
 	})
 	
@@ -132,10 +132,12 @@
 		$('#close_session').show()
 	} 
 	$('#close_session').on('click', function(){
+		channel.trigger("client-teacher-click", 'CLOSE_SESSION')
+		$('#gotoFirstSlide').trigger("click") 
 		$.post(IP + '/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
 			console.log('结束回话')
 			localStorage.clear()
-			location.replace('/sessionend')
+			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
 		})
 	})
 
