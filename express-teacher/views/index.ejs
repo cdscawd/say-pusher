@@ -18,7 +18,7 @@
   </head>
 <body>
 <div id="main">
-	<iframe id="frame" src="static/curriculum/presentation"></iframe>
+	<iframe id="iframe" src="static/curriculum/Qooco-KB-A01"></iframe>
 	<div class="control-box">
 		<div class="container">
 			<div id="prev_step"></div>
@@ -61,6 +61,7 @@
 		</table>
 	</div>
 </div>
+<div id="Mask">Loading...</div>
 <script src="http://zeptojs.com/zepto.min.js"></script>
 <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
 <!-- Ispring js -->
@@ -73,7 +74,7 @@
 	// http://localhost:8001/teacher?sessionRequestId=58d1b23d602a4a0001e66ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34572
 	*/
 	// DEV Working Space
-
+	var IP = 'http://192.168.0.100:8769'
 	var pusher = {}
 	var channel;
 	var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1];
@@ -81,10 +82,7 @@
 	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1];
 	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1];
 
-	var PLAY = "播放动画"
-	var PAUSE = "暂停动画"
 	var COUNT_DOWN = 1200000
-	var playbackController
 	var prevSlideBtn = document.getElementById("prev_slide")
 	var nextSlideBtn = document.getElementById("next_slide")
 	var playPrevStepBtn = document.getElementById("prev_step")
@@ -93,48 +91,48 @@
 	var timeLabel = document.getElementById("time")
 	var slideIndexLabel = document.getElementById("slideIndex")
 	var slidesCount
+	var playbackController
 	var isPlayedPresentation
 	var ispringPresentationConnector = {}
 	
-	$.get('http://192.168.0.102:8769/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
+	$.get(IP + '/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
 		var status = res.status
 		if (status === 200) { 
 			pusher = res.data
-			var pusherKey = res.data.pusherKey
-			var cluster = res.data.cluster
-			var channelName = res.data.channelName
+			var pusherKey = pusher.pusherKey
+			var cluster = pusher.cluster
+			var channelName = pusher.channelName
+			$('#iframe').attr('src', 'static/curriculum/' + pusher.lessonLevel)
 
 			Pusher.logToConsole = true;
 			var pusher = new Pusher(pusherKey, {
 				cluster: cluster,
 				encrypted: true,
 				authTransport: 'jsonp',
-				authEndpoint: 'http://192.168.0.102:8769/voip-web-api/pusher/auth'
+				authEndpoint: IP + '/voip-web-api/pusher/auth'
 			});
 			channel = pusher.subscribe(channelName)
 			
-			// $.post('http://192.168.0.102:8769/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+lessonSlug, function(res){
-			$.post('http://192.168.0.102:8769/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+'1072_2932_34572', function(res){
+			// $.post(IP + '/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+lessonSlug, function(res){
+			$.post(IP + '/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+'1072_2932_34572', function(res){
 				if (res.status === 200) {
 					return
 				}
 			})
-			
-			playerInit()
 		} else if(status === 400) {
-			$('#frame').attr('src', '')
+			$('#iframe').attr('src', '')
 			localStorage.clear()
 			location.replace('/sessionend')
 		}
 	})
-
+	
 	// 结束会话
 	function ClosureSession() {
 		$('#next_step').hide()
 		$('#close_session').show()
 	} 
 	$('#close_session').on('click', function(){
-		$.post('http://192.168.0.102:8769/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
+		$.post(IP + '/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
 			console.log('结束回话')
 			localStorage.clear()
 			location.replace('/sessionend')
@@ -167,6 +165,7 @@
 	// player init
 	function playerInit() { 
 		ispringPresentationConnector.register = function(player) {
+			$('#Mask').hide()
 			$('#end_time').text("Running...")
 			var presentation = player.presentation()
 			slidesCount = presentation.slides().count()
@@ -174,9 +173,6 @@
 			initPlaybackControllerEventsHandlers()
 			initButtonsEventsHandlers(slidesCount)
 			sessionCountDown()
-			player.view().playbackController().slideChangeEvent().addHandler(function(slideIndex) {
-				//logger("Index Page : " + slideIndex)
-			})
 		}
 	}
 	
@@ -192,9 +188,9 @@
 			var timeOffset = clock.timestamp().timeOffset()
 			var minutes = Math.floor(timeOffset / 60)
 			var seconds = Math.round(timeOffset % 60)
-			timeLabel.innerHTML = (minutes < 10) ? "0" + minutes: minutes
+			timeLabel.innerHTML = (minutes < 10) ? "0" + minutes : minutes
 			timeLabel.innerHTML += ":"
-			timeLabel.innerHTML += (seconds < 10) ? "0" + seconds: seconds
+			timeLabel.innerHTML += (seconds < 10) ? "0" + seconds : seconds
 		})
 	}
 	// control button
@@ -229,13 +225,6 @@
 		}
 	}
 
-	// debug logger 
-	function logger(text) {
-		// var logger = document.getElementById("logger")
-		// logger.innerHTML = logger.innerHTML + text + '<br>'
-		//logger.innerHTML =  text 
-	}
-
 	// 倒计时 1200000
 	function sessionCountDown() {
 		var min, sec, LOCAL_COUNT_DOWN
@@ -248,7 +237,10 @@
 				COUNT_DOWN = COUNT_DOWN - 1000
 			}
 			min = parseInt((COUNT_DOWN / 1000 / 60), 10)
+			min = (min < 10) ? ('0' + min) : min
 			sec = parseInt((COUNT_DOWN - (min * 60 * 1000)) / 1000, 10)
+			sec = (sec < 10) ? ('0' + sec) : sec
+			
 			document.getElementById("end_time").innerHTML = min + "' " + sec + "''"
 			LOCAL_COUNT_DOWN = (min * 60 * 1000) + (sec * 1000)
 			window.localStorage.setItem('LOCAL_COUNT_DOWN', LOCAL_COUNT_DOWN)
@@ -257,6 +249,10 @@
 				clearInterval(timer)
 			}
 		}, 1000)
+	}
+
+	window.onload = function() {
+		playerInit()
 	}
 </script>
 </body>
