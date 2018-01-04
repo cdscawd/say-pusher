@@ -18,7 +18,8 @@
   </head>
 <body>
 <div id="main">
-	<iframe id="iframe" src="static/curriculum/Qooco-KB-A01"></iframe>
+	<!-- <iframe id="iframe" src="static/curriculum/Qooco-KB-A01"></iframe> -->
+	<iframe id="iframe" src=""></iframe>
 	<div class="control-box">
 		<div class="container">
 			<div id="prev_step"></div>
@@ -65,7 +66,7 @@
 		</table>
 	</div>
 </div>
-<div id="Mask">Loading...</div>
+<!-- <div id="Mask">Loading...</div> -->
 <script src="http://zeptojs.com/zepto.min.js"></script>
 <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
 <!-- Ispring js -->
@@ -78,8 +79,8 @@
 	//  http://localhost:8001/teacher?sessionRequestId=58d1b23d602a4a0161e17ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1247_4907_43490
 	*/
 	// DEV Working Space
-	// var IP = 'http://192.168.0.100:8769'
-	var IP = 'https://open.api.qooco.com'
+	var IP = 'http://192.168.0.105:8769'
+	// var IP = 'https://open.api.qooco.com'
 	var pusher = {}
 	var channel;
 	var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1];
@@ -107,7 +108,8 @@
 			var pusherKey = pusher.pusherKey
 			var cluster = pusher.cluster
 			var channelName = pusher.channelName
-			$('#iframe').attr('src', 'static/curriculum/' + pusher.lessonLevel)
+			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
+			// $('#iframe').attr('src', 'http://localhost:8002/static/subjects/' + pusher.lessonLevel)
 
 			Pusher.logToConsole = true;
 			var pusher = new Pusher(pusherKey, {
