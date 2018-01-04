@@ -33,7 +33,7 @@
 	</div>
   <img class="praise " src="static/images/praise.gif" alt="">
   <img class="like " src="static/images/like.gif" alt="">
-  <div class="control" style="display: none;">
+  <div class="control" style="display: ;">
 		<div class="buttons">
 			<div>Test control</div>
 			<div>
@@ -111,7 +111,7 @@
 			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
 			// $('#iframe').attr('src', 'http://localhost:8002/static/subjects/' + pusher.lessonLevel)
 
-			Pusher.logToConsole = true;
+			Pusher.logToConsole = false;
 			var pusher = new Pusher(pusherKey, {
 				cluster: cluster,
 				encrypted: true,
