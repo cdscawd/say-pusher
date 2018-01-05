@@ -18,11 +18,10 @@
   </head>
 <body>
 <div id="container">
-  <!-- <iframe id="iframe" src="static/curriculum/Qooco-KB-A01"></iframe> -->
   <iframe id="iframe" src=""></iframe>
   <img class="praise " src="static/images/praise.gif" alt="">
   <img class="like " src="static/images/like.gif" alt="">
-  <div class="control" style="display: ;">
+  <div class="control" style="display: none;">
     <div class="buttons">
       <button id="gotoFirstSlide">First Slide</button>
       <button id="prev_slide">Prev Slide</button>
@@ -53,8 +52,8 @@
 	//  http://localhost:8000/learner?sessionRequestId=58d1b23d602a4a0161e17ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1247_4907_43490
 	*/
 	// DEV Working Space
-	var IP = 'http://192.168.0.105:8769'
-	// var IP = 'https://open.api.qooco.com'
+	// var IP = 'http://192.168.0.105:8769'
+	var IP = 'https://open.api.qooco.com'
 	var pusher = {}
 	var channel
 	var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1]
@@ -69,7 +68,6 @@
 			var pusherKey = pusher.pusherKey
 			var cluster = pusher.cluster
 			var channelName = pusher.channelName
-			// $('#iframe').attr('src', 'static/curriculum/' + pusher.lessonLevel)
 			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
 
 			Pusher.logToConsole = true

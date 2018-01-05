@@ -33,9 +33,9 @@
 	</div>
   <img class="praise " src="static/images/praise.gif" alt="">
   <img class="like " src="static/images/like.gif" alt="">
-  <div class="control" style="display: ;">
+  <div class="control" style="display: block;">
 		<div class="buttons">
-			<div>Test control</div>
+			<div style="color:red">Test control</div>
 			<div>
 				<button id="gotoFirstSlide">First Slide</button>
 				<button id="prev_slide">Prev Slide</button>
@@ -79,8 +79,8 @@
 	//  http://localhost:8001/teacher?sessionRequestId=58d1b23d602a4a0161e17ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1247_4907_43490
 	*/
 	// DEV Working Space
-	var IP = 'http://192.168.0.105:8769'
-	// var IP = 'https://open.api.qooco.com'
+	// var IP = 'http://192.168.0.105:8769'
+	var IP = 'https://open.api.qooco.com'
 	var pusher = {}
 	var channel;
 	var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1];
@@ -88,7 +88,7 @@
 	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1];
 	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1];
 
-	var COUNT_DOWN = 1001200000
+	var COUNT_DOWN = 1200000
 	var prevSlideBtn = document.getElementById("prev_slide")
 	var nextSlideBtn = document.getElementById("next_slide")
 	var playPrevStepBtn = document.getElementById("prev_step")
@@ -109,7 +109,6 @@
 			var cluster = pusher.cluster
 			var channelName = pusher.channelName
 			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
-			// $('#iframe').attr('src', 'http://localhost:8002/static/subjects/' + pusher.lessonLevel)
 
 			Pusher.logToConsole = true;
 			var pusher = new Pusher(pusherKey, {
@@ -128,8 +127,8 @@
 			})
 		} else if(status === 400) {
 			$('#iframe').attr('src', '')
-			localStorage.removeItem('LOCAL_COUNT_DOWN')
-			localStorage.clear()
+			window.localStorage.removeItem('LOCAL_COUNT_DOWN')
+			window.localStorage.clear()
 			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
 		}
 	})
@@ -138,14 +137,15 @@
 	function ClosureSession() {
 		$('#next_step').hide()
 		$('#close_session').show()
+		window.localStorage.removeItem('LOCAL_COUNT_DOWN')
 	} 
 	$('#close_session').on('click', function(){
 		channel.trigger("client-teacher-click", 'CLOSE_SESSION')
 		$('#gotoFirstSlide').trigger("click") 
 		$.post(IP + '/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
 			console.log('结束回话')
-			localStorage.removeItem('LOCAL_COUNT_DOWN')
-			localStorage.clear()
+			window.localStorage.removeItem('LOCAL_COUNT_DOWN')
+			window.localStorage.clear()
 			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
 		})
 	})
@@ -240,11 +240,11 @@
 	function sessionCountDown() {
 		var min, sec, LOCAL_COUNT_DOWN
 		var timer = setInterval(function() {
-			var neadGet = (typeof localStorage.getItem('LOCAL_COUNT_DOWN')) == 'object' ? true : false
+			var neadGet = (typeof window.localStorage.getItem('LOCAL_COUNT_DOWN')) == 'object' ? true : false
 			if (neadGet) {
 				COUNT_DOWN = COUNT_DOWN - 1000
 			} else {
-				COUNT_DOWN = parseInt(localStorage.getItem('LOCAL_COUNT_DOWN'), 10)
+				COUNT_DOWN = parseInt(window.localStorage.getItem('LOCAL_COUNT_DOWN'), 10)
 				COUNT_DOWN = COUNT_DOWN - 1000
 			}
 			min = parseInt((COUNT_DOWN / 1000 / 60), 10)
@@ -254,7 +254,7 @@
 			
 			document.getElementById("end_time").innerHTML = min + "' " + sec + "''"
 			LOCAL_COUNT_DOWN = (min * 60 * 1000) + (sec * 1000)
-			window.localStorage.setItem('LOCAL_COUNT_DOWN', LOCAL_COUNT_DOWN)
+			window.window.localStorage.setItem('LOCAL_COUNT_DOWN', LOCAL_COUNT_DOWN)
 			if (sec < 0) {
 				document.getElementById("end_time").innerHTML = "End"
 				clearInterval(timer)

@@ -184,13 +184,13 @@ iframe {
 #logger {
   position: fixed;
   right: 10px;
-  bottom: 10px;
-  padding: 10px;
+  top: 10px;
+  padding: 4px;
   z-index: 10;
   background-color: rgba(0,0,0,0.4);
   color: #fff;
-  width: 240px;
-  height: 200px;
+  width: 200px;
+  height: 150px;
   overflow-y: scroll;
 }
 #logger p {
@@ -198,7 +198,6 @@ iframe {
   font-size: 14px;
   font-weight: 600;
   color: #fff;
-  margin-bottom: 6px;
 }
 #logger table {
   width: 100%;
