@@ -90,7 +90,6 @@ iframe {
   animation-name: bounceOut;
 }
 
-
 .control {
   display: flex;
   justify-content: space-between;
@@ -131,7 +130,6 @@ iframe {
   height: 200px;
   overflow-y: scroll;
 }
-
 
 #Mask {
   position: fixed;
