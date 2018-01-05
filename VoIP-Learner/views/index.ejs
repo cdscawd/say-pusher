@@ -18,10 +18,11 @@
   </head>
 <body>
 <div id="container">
-  <iframe id="iframe" src="static/curriculum/Qooco-KB-A01"></iframe>
+  <!-- <iframe id="iframe" src="static/curriculum/Qooco-KB-A01"></iframe> -->
+  <iframe id="iframe" src=""></iframe>
   <img class="praise " src="static/images/praise.gif" alt="">
   <img class="like " src="static/images/like.gif" alt="">
-  <div class="control" style="display: none;">
+  <div class="control" style="display: ;">
     <div class="buttons">
       <button id="gotoFirstSlide">First Slide</button>
       <button id="prev_slide">Prev Slide</button>
@@ -68,7 +69,8 @@
 			var pusherKey = pusher.pusherKey
 			var cluster = pusher.cluster
 			var channelName = pusher.channelName
-			$('#iframe').attr('src', 'static/curriculum/' + pusher.lessonLevel)
+			// $('#iframe').attr('src', 'static/curriculum/' + pusher.lessonLevel)
+			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
 
 			Pusher.logToConsole = true
 			var pusher = new Pusher(pusherKey, {
@@ -129,6 +131,7 @@
 	var playbackController
 	var isPlayedPresentation
 	var ispringPresentationConnector = {}
+
 	// praise 点赞
 	$('#praise').on('click', function() {
 		$('.praise').addClass('animated bounceIn')
@@ -139,6 +142,7 @@
 			$('.praise').removeClass('animated bounceOut')
 		},1500)
 	})
+
 	// 喜欢 like
 	$('#like').on('click', function() {
 		channel.trigger("client-teacher-click", 'LIKE')

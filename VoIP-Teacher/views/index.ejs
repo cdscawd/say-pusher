@@ -88,7 +88,7 @@
 	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1];
 	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1];
 
-	var COUNT_DOWN = 1200000
+	var COUNT_DOWN = 1001200000
 	var prevSlideBtn = document.getElementById("prev_slide")
 	var nextSlideBtn = document.getElementById("next_slide")
 	var playPrevStepBtn = document.getElementById("prev_step")
@@ -111,7 +111,7 @@
 			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
 			// $('#iframe').attr('src', 'http://localhost:8002/static/subjects/' + pusher.lessonLevel)
 
-			Pusher.logToConsole = false;
+			Pusher.logToConsole = true;
 			var pusher = new Pusher(pusherKey, {
 				cluster: cluster,
 				encrypted: true,
