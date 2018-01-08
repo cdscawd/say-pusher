@@ -76,9 +76,9 @@
 	* 	sessionStartAt=1507073590164
 	* 	sessionEndAt=1507679587594
 	* 	lessonSlug=1072_2932_34582
-	//  http://localhost:8001/teacher?sessionRequestId=58d1b23d602a4a0161e17ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1247_4907_43490
+	*  	http://localhost:8001/teacher?sessionRequestId=58d1b23d602a4a0161e17ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1247_4907_43490
 	*/
-	// DEV Working Space
+
 	var IP = 'http://192.168.0.103:8769'
 	// var IP = 'https://open.api.qooco.com'
 	var pusher = {}
@@ -89,13 +89,7 @@
 	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1];
 
 	var COUNT_DOWN = 1200000
-	var prevSlideBtn = document.getElementById("prev_slide")
-	var nextSlideBtn = document.getElementById("next_slide")
-	var playPrevStepBtn = document.getElementById("prev_step")
-	var playNextStepBtn = document.getElementById("next_step")
-	var gotoFirstSlide = document.getElementById("gotoFirstSlide")
 	var timeLabel = document.getElementById("time")
-	var slideIndexLabel = document.getElementById("slideIndex")
 	var slidesCount
 	var playbackController
 	var isPlayedPresentation
@@ -119,6 +113,26 @@
 			});
 			channel = pusher.subscribe(channelName)
 			
+			// 同步处理 about 前进后退触发事件完成 。。。 学生端处理
+			channel.bind('client-teacher-click', function (data) {
+				var EVENT_TYPE = data
+				if (EVENT_TYPE.type == 'Learner_Slide_Index') {
+					var learner_slide_index = parseInt(EVENT_TYPE.index, 10)
+					var teacher_slide_index = parseInt($('#slide_index').text(), 10)
+					console.log(learner_slide_index)
+					console.log(teacher_slide_index)
+					if (learner_slide_index < teacher_slide_index) {
+						for(var i = 0; i < (teacher_slide_index - learner_slide_index); i ++ ) {
+							channel.trigger("client-teacher-click", 'NEXT_SLIDE')
+						}
+					} if (learner_slide_index > teacher_slide_index) {
+						for(var i = 0; i < (learner_slide_index - teacher_slide_index); i ++ ) {
+							channel.trigger("client-teacher-click", 'PREV_SLIDE')
+						}
+					}
+				}
+			})
+
 			// $.post(IP + '/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+lessonSlug, function(res){
 			$.post(IP + '/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+'1072_2932_34572', function(res){
 				if (res.status === 200) {
@@ -208,34 +222,34 @@
 	}
 	// control button
 	function initButtonsEventsHandlers(slidesCount) {
-		prevSlideBtn.onclick = function() {
+		$('#prev_slide').on('click', function() {
 			playbackController.gotoPreviousSlide()
 			channel.trigger("client-teacher-click", 'PREV_SLIDE')
-		}
-		nextSlideBtn.onclick = function() {
+		})
+		$('#next_slide').on('click', function() {
 			playbackController.gotoNextSlide()
 			channel.trigger("client-teacher-click", 'NEXT_SLIDE')
 			var slideIndex = $('#slide_index').text()
 			if (slideIndex == slidesCount) {
 				ClosureSession()
 			}
-		}
-		playPrevStepBtn.onclick = function() {
+		})
+		$('#prev_step').on('click', function() {
 			playbackController.gotoPreviousStep()
 			channel.trigger("client-teacher-click", 'PREV_STEP')
-		}
-		playNextStepBtn.onclick = function() {
+		})
+		$('#next_step').on('click', function() {
 			playbackController.gotoNextStep()
 			channel.trigger("client-teacher-click", 'NEXT_STEP')
 			var slideIndex = $('#slide_index').text()
 			if (slideIndex == slidesCount) {
 				ClosureSession()
 			}
-		}
-		gotoFirstSlide.onclick = function() {
+		})
+		$('#gotoFirstSlide').on('click', function() {
 			playbackController.gotoFirstSlide(false)
 			channel.trigger("client-teacher-click", 'FIRST_SLIDE')
-		}
+		})
 	}
 
 	// 倒计时 1200000

@@ -21,7 +21,7 @@
   <iframe id="iframe" src=""></iframe>
   <img class="praise " src="static/images/praise.gif" alt="">
   <img class="like " src="static/images/like.gif" alt="">
-  <div class="control" style="display: none;">
+  <div class="control" style="display: ;">
     <div class="buttons">
       <button id="gotoFirstSlide">First Slide</button>
       <button id="prev_slide">Prev Slide</button>
@@ -30,6 +30,7 @@
       <button id="next_step">Next Step</button>
       <button id="praise">praise</button>
       <button id="like">like</button>
+      <button id="test">test</button>
     </div>
     <div id="end_time">课程结束倒计时 20' 00''</div>
     <div class="log">
@@ -49,7 +50,7 @@
 	* 	sessionStartAt=1507073590164
 	* 	sessionEndAt=1507679587594
 	* 	lessonSlug=1072_2932_34582
-	//  http://localhost:8000/learner?sessionRequestId=58d1b23d602a4a0161e17ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1247_4907_43490
+	//  http://localhost:8000/learner?sessionRequestId=51d1b23d602a4a0161e17ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1247_4907_43490
 	*/
 	// DEV Working Space
 	var IP = 'http://192.168.0.103:8769'
@@ -120,17 +121,22 @@
 	})
 
 	var COUNT_DOWN = 1200000
-	var prevSlideBtn = document.getElementById("prev_slide")
-	var nextSlideBtn = document.getElementById("next_slide")
-	var playPrevStepBtn = document.getElementById("prev_step")
-	var playNextStepBtn = document.getElementById("next_step")
-	var gotoFirstSlide = document.getElementById("gotoFirstSlide")
 	var timeLabel = document.getElementById("time")
 	var slideIndexLabel = document.getElementById("slideIndex")
+	var slideIndex
 	var slidesCount
 	var playbackController
 	var isPlayedPresentation
 	var ispringPresentationConnector = {}
+
+	// test
+	$('#test').on('click', function() {
+		var learnerSlideIndex = $('#slideIndex span').text()
+		channel.trigger("client-teacher-click", {
+			type: 'Learner_Slide_Index',
+			index: learnerSlideIndex
+		})
+	})
 
 	// praise 点赞
 	$('#praise').on('click', function() {
@@ -165,10 +171,7 @@
 			playbackController = player.view().playbackController()
 			initPlaybackControllerEventsHandlers()
 			initButtonsEventsHandlers()
-			sessionCountDown()
-			player.view().playbackController().slideChangeEvent().addHandler(function(slideIndex) {
-				logger("Page : " + slideIndex)
-			})
+			// sessionCountDown()
 		}
 	}
 	
@@ -176,7 +179,8 @@
 	// Player-SDK/documentation/js-api/ispring.presenter.player.IPresentationPlaybackController.html#playbackState
 	function initPlaybackControllerEventsHandlers() {
 		playbackController.slideChangeEvent().addHandler(function(slideIndex) {
-			slideIndexLabel.innerHTML = "Slide: " + (slideIndex + 1) + " / " + slidesCount
+			slideIndex = slideIndex
+			slideIndexLabel.innerHTML = "Slide: <span>" + (slideIndex + 1) + "</span> / " + slidesCount
 		})
 	
 		playbackController.clock().tickEvent().addHandler(function(clock) {
@@ -190,21 +194,22 @@
 	}
 	// control button
 	function initButtonsEventsHandlers() {
-		prevSlideBtn.onclick = function() {
+		$('#prev_slide').on('click', function() {
 			playbackController.gotoPreviousSlide()
-		}
-		nextSlideBtn.onclick = function() {
+		})
+		$('#next_slide').on('click', function() {
 			playbackController.gotoNextSlide()
-		}
-		playPrevStepBtn.onclick = function() {
+		})
+		$('#prev_step').on('click', function() {
 			playbackController.gotoPreviousStep()
-		}
-		playNextStepBtn.onclick = function() {
+			channel.trigger("client-teacher-click", '1')
+		})
+		$('#next_step').on('click', function() {
 			playbackController.gotoNextStep()
-		}
-		gotoFirstSlide.onclick = function() {
+		})
+		$('#gotoFirstSlide').on('click', function() {
 			playbackController.gotoFirstSlide(false)
-		}
+		})
 	}
 
 	// debug logger 
@@ -240,6 +245,7 @@
 
 	window.onload = function() {
 		playerInit()
+		
 	}
 </script>
 </body>
