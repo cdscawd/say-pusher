@@ -33,25 +33,15 @@
 	</div>
   <img class="praise " src="static/images/praise.gif" alt="">
   <img class="like " src="static/images/like.gif" alt="">
-  <div class="control" style="display: block;">
+  <div class="control" style="display: none;">
 		<div class="buttons">
 			<div style="color:red">Test control</div>
 			<div>
 				<button id="gotoFirstSlide">First Slide</button>
 				<button id="prev_slide">Prev Slide</button>
-				<button id="next_slide">Next Slide</button>		
+				<button id="next_slide">Next Slide</button>
+				<button id="sync">sync</button>
 			</div>
-			
-			<!-- <button id="prev_step">Prev Step</button>
-			<button id="next_step">Next Step</button> -->
-			<!-- <button id="praise">praise</button>
-			<button id="like">like</button> -->
-			<!-- <button id="end_session" style="display: none;">Closure Session</button> -->
-		</div>
-		<!-- <div id="end_time">课程结束倒计时 20' 00''</div> -->
-		<div class="log">
-			<!-- <p id="time"></p> -->
-			<!-- <p id="slideIndex"></p> -->
 		</div>
   </div>
   <div id="logger">
@@ -66,7 +56,7 @@
 		</table>
 	</div>
 </div>
-<!-- <div id="Mask">Loading...</div> -->
+<div id="Mask">Loading...</div>
 <script src="http://zeptojs.com/zepto.min.js"></script>
 <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
 <!-- Ispring js -->
@@ -87,7 +77,6 @@
 	var sessionEndAt = window.location.search.match(/sessionEndAt=(\S*)&lessonSlug/)[1];
 	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1];
 	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1];
-
 	var COUNT_DOWN = 1200000
 	var timeLabel = document.getElementById("time")
 	var slidesCount
@@ -117,24 +106,18 @@
 			channel.bind('client-teacher-click', function (data) {
 				var EVENT_TYPE = data
 				if (EVENT_TYPE.type == 'Learner_Slide_Index') {
-					var learner_slide_index = parseInt(EVENT_TYPE.index, 10)
+					var learner_slide_index = parseInt(EVENT_TYPE.slide_index, 10)
 					var teacher_slide_index = parseInt($('#slide_index').text(), 10)
-					console.log(learner_slide_index)
-					console.log(teacher_slide_index)
-					if (learner_slide_index < teacher_slide_index) {
-						for(var i = 0; i < (teacher_slide_index - learner_slide_index); i ++ ) {
-							channel.trigger("client-teacher-click", 'NEXT_SLIDE')
-						}
-					} if (learner_slide_index > teacher_slide_index) {
-						for(var i = 0; i < (learner_slide_index - teacher_slide_index); i ++ ) {
-							channel.trigger("client-teacher-click", 'PREV_SLIDE')
-						}
-					}
+					$('#Mask').show()
+					$('#sync').trigger('click')
+					setTimeout(function() {
+						$('#Mask').hide()
+					}, 1000)
 				}
 			})
 
-			// $.post(IP + '/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+lessonSlug, function(res){
-			$.post(IP + '/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+'1072_2932_34572', function(res){
+			// $.post(IP + '/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+'1072_2932_34572', function(res){
+			$.post(IP + '/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+lessonSlug, function(res){
 				if (res.status === 200) {
 					return
 				}
@@ -154,12 +137,11 @@
 		$('#next_step').hide()
 		$('#close_session').show()
 		window.localStorage.removeItem('LOCAL_COUNT_DOWN')
-	} 
+	}
 	$('#close_session').on('click', function(){
-		channel.trigger("client-teacher-click", 'CLOSE_SESSION')
+		channel.trigger("client-teacher-click", {type: 'CLOSE_SESSION'})
 		$('#gotoFirstSlide').trigger("click") 
 		$.post(IP + '/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
-			console.log('结束回话')
 			window.localStorage.removeItem('LOCAL_COUNT_DOWN')
 			window.localStorage.clear()
 			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
@@ -168,7 +150,7 @@
 
 	// praise 点赞
 	$('#praise').on('click', function() {
-		channel.trigger("client-teacher-click", 'PRAISE')
+		channel.trigger("client-teacher-click", {type: 'PRAISE'})
 		$('.praise').addClass('animated bounceIn')
 		setTimeout(function() {
 			$('.praise').removeClass('bounceIn').addClass('bounceOut')
@@ -179,7 +161,7 @@
 	})
 	// 喜欢 like
 	$('#like').on('click', function() {
-		channel.trigger("client-teacher-click", 'LIKE')
+		channel.trigger("client-teacher-click", {type: 'LIKE'})
 		$('.like').addClass('animated bounceIn')
 		setTimeout(function() {
 			$('.like').removeClass('bounceIn').addClass('bounceOut')
@@ -200,9 +182,10 @@
 			initPlaybackControllerEventsHandlers()
 			initButtonsEventsHandlers(slidesCount)
 			sessionCountDown()
+			presentationController()
 		}
 	}
-	
+
 	// player event
 	// Player-SDK/documentation/js-api/ispring.presenter.player.IPresentationPlaybackController.html#playbackState
 	function initPlaybackControllerEventsHandlers() {
@@ -224,11 +207,11 @@
 	function initButtonsEventsHandlers(slidesCount) {
 		$('#prev_slide').on('click', function() {
 			playbackController.gotoPreviousSlide()
-			channel.trigger("client-teacher-click", 'PREV_SLIDE')
+			channel.trigger("client-teacher-click", {type: 'PREV_SLIDE'})
 		})
 		$('#next_slide').on('click', function() {
 			playbackController.gotoNextSlide()
-			channel.trigger("client-teacher-click", 'NEXT_SLIDE')
+			channel.trigger("client-teacher-click", {type: 'NEXT_SLIDE'})
 			var slideIndex = $('#slide_index').text()
 			if (slideIndex == slidesCount) {
 				ClosureSession()
@@ -236,11 +219,15 @@
 		})
 		$('#prev_step').on('click', function() {
 			playbackController.gotoPreviousStep()
-			channel.trigger("client-teacher-click", 'PREV_STEP')
+			channel.trigger("client-teacher-click", {type: 'PREV_STEP'})
 		})
 		$('#next_step').on('click', function() {
+			var teacherSlideIndex = $('#slide_index').text()
 			playbackController.gotoNextStep()
-			channel.trigger("client-teacher-click", 'NEXT_STEP')
+			channel.trigger("client-teacher-click", {
+				type: 'NEXT_STEP',
+				teacherSlideIndex: teacherSlideIndex
+			})
 			var slideIndex = $('#slide_index').text()
 			if (slideIndex == slidesCount) {
 				ClosureSession()
@@ -248,10 +235,19 @@
 		})
 		$('#gotoFirstSlide').on('click', function() {
 			playbackController.gotoFirstSlide(false)
-			channel.trigger("client-teacher-click", 'FIRST_SLIDE')
+			channel.trigger("client-teacher-click", {type: 'FIRST_SLIDE'})
 		})
 	}
 
+	$('#sync').on('click', function(){
+		var teacherSlideIndex = $('#slide_index').text()
+		playbackController.gotoTimestamp(teacherSlideIndex - 1, 0, 0, false)
+		channel.trigger("client-teacher-click", {
+			type: 'teacher_Slide_Index',
+			slide_index: teacherSlideIndex
+		})
+	})
+	
 	// 倒计时 1200000
 	function sessionCountDown() {
 		var min, sec, LOCAL_COUNT_DOWN

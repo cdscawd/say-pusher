@@ -21,7 +21,7 @@
   <iframe id="iframe" src=""></iframe>
   <img class="praise " src="static/images/praise.gif" alt="">
   <img class="like " src="static/images/like.gif" alt="">
-  <div class="control" style="display: ;">
+  <div class="control" style="display: none;">
     <div class="buttons">
       <button id="gotoFirstSlide">First Slide</button>
       <button id="prev_slide">Prev Slide</button>
@@ -30,7 +30,7 @@
       <button id="next_step">Next Step</button>
       <button id="praise">praise</button>
       <button id="like">like</button>
-      <button id="test">test</button>
+      <button id="sync">sync</button>
     </div>
     <div id="end_time">课程结束倒计时 20' 00''</div>
     <div class="log">
@@ -61,6 +61,7 @@
 	var sessionEndAt = window.location.search.match(/sessionEndAt=(\S*)&lessonSlug/)[1]
 	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1]
 	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1]
+	var learner_Slide_Index
 	
 	$.get(IP + '/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
 		var status = res.status
@@ -80,34 +81,46 @@
 			})
 			channel = pusher.subscribe(channelName)
 
+			setTimeout(function(){
+				channel.trigger("client-teacher-click", {
+					type: 'Learner_Slide_Index',
+					slide_index: parseInt($('#slideIndex span').text(), 10)
+				})
+				$('#Mask').hide()
+			}, 3000)
+
 			channel.bind('client-teacher-click', function (data) {
 				var EVENT_TYPE = data
-				switch (EVENT_TYPE) {
+				switch (EVENT_TYPE.type) {
 					case 'NEXT_STEP':
-						$('#next_step').trigger("click") 
+						$('#next_step').trigger('click') 
 						break
 					case 'PREV_STEP':
-						$('#prev_step').trigger("click") 
+						$('#prev_step').trigger('click') 
 						break
 					case 'NEXT_SLIDE':
-						$('#next_slide').trigger("click") 
+						$('#next_slide').trigger('click') 
 						break
 					case 'PREV_SLIDE':
-						$('#prev_slide').trigger("click") 
+						$('#prev_slide').trigger('click') 
 						break
 					case 'FIRST_SLIDE':
-						$('#gotoFirstSlide').trigger("click") 
+						$('#gotoFirstSlide').trigger('click') 
 						break
 					case 'PRAISE':
-						$('#praise').trigger("click") 
+						$('#praise').trigger('click') 
 						break
 					case 'LIKE':
-						$('#like').trigger("click") 
+						$('#like').trigger('click') 
 						break
 					case 'CLOSE_SESSION':
-						$('#gotoFirstSlide').trigger("click") 
+						$('#gotoFirstSlide').trigger('click') 
 						localStorage.clear()
 						location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+						break
+					case 'teacher_Slide_Index':
+						learner_Slide_Index = parseInt(EVENT_TYPE.slide_index, 10) 
+						$('#sync').trigger('click')
 						break
 				}
 			})
@@ -129,13 +142,9 @@
 	var isPlayedPresentation
 	var ispringPresentationConnector = {}
 
-	// test
-	$('#test').on('click', function() {
-		var learnerSlideIndex = $('#slideIndex span').text()
-		channel.trigger("client-teacher-click", {
-			type: 'Learner_Slide_Index',
-			index: learnerSlideIndex
-		})
+	// 同步
+	$('#sync').on('click', function() {
+		playbackController.gotoTimestamp(learner_Slide_Index - 1, 0, 0, false)
 	})
 
 	// praise 点赞
@@ -164,7 +173,6 @@
 	// player init
 	function playerInit() { 
 		ispringPresentationConnector.register = function(player) {
-			$('#Mask').hide()
 			logger("Teacher Player Running...")
 			var presentation = player.presentation()
 			slidesCount = presentation.slides().count()
@@ -245,7 +253,6 @@
 
 	window.onload = function() {
 		playerInit()
-		
 	}
 </script>
 </body>
