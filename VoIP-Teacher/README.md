@@ -1,6 +1,4 @@
 
-
-
 ## Start
 
 dev
@@ -27,7 +25,6 @@ $ forever start -l forever.log -o out.log -e err.log ./bin/www   #输出日志�
 	lessonSlug=1072_2932_34582
 	URL: http://localhost:8001/teacher?sessionRequestId=58d1b873d602a4a0001e66ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34572
  ```
-
 
 Bug Tip
 ```

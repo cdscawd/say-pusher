@@ -1,6 +1,4 @@
 
-
-
 ## Start
 dev
 ```
@@ -16,7 +14,6 @@ $ forever stop ./bin/www           #关闭
 $ forever start -l forever.log -o out.log -e err.log ./bin/www   #输出日志和错误
 ```
 
-
 #About
  Learner server port is 8000 (/bin/www)
  Index Page(/view/index.ejs): 
@@ -28,7 +25,6 @@ $ forever start -l forever.log -o out.log -e err.log ./bin/www   #输出日志�
 	URL: http://localhost:8000/learner?sessionRequestId=58d1b23d602a4a0001e66ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1072_2932_34572
  ```
 
-
 Bug Tip
 ```
 [root@mango VoIP-Teacher]# forever start bin/www
@@ -39,4 +35,3 @@ error:   Cannot start forever
 error:   log file /root/.forever/forever.log exists. Use the -a or --append option to append log.
 [root@mango VoIP-Teacher]# forever start -a -l forever.log -o out.log -e err.log bin/www
 ```
-

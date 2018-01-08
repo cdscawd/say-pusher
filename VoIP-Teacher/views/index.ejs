@@ -79,8 +79,8 @@
 	//  http://localhost:8001/teacher?sessionRequestId=58d1b23d602a4a0161e17ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1247_4907_43490
 	*/
 	// DEV Working Space
-	// var IP = 'http://192.168.0.105:8769'
-	var IP = 'https://open.api.qooco.com'
+	var IP = 'http://192.168.0.103:8769'
+	// var IP = 'https://open.api.qooco.com'
 	var pusher = {}
 	var channel;
 	var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1];
@@ -130,6 +130,8 @@
 			window.localStorage.removeItem('LOCAL_COUNT_DOWN')
 			window.localStorage.clear()
 			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+		} else if(status === 401) {
+			alert(res.error)
 		}
 	})
 	
