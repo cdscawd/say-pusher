@@ -9,15 +9,17 @@ dev
 
 sercer
 ```
-$ sudo npm install forever -g   #安装
-$ forever start ./bin/www          #启动
-$ forever stop ./bin/www           #关闭
+$ sudo npm install forever -g   		#安装
+$ forever start ./bin/www          	#启动
+$ forever stop ./bin/www           	#关闭
 $ forever start -l forever.log -o out.log -e err.log ./bin/www   #输出日志和错误
+or
+$ forever start -a -l forever.log -o bin/log/out.log -e bin/log/out.log bin/www
 ```
 
 #About
  Teacher server port is 8001 (/bin/www)
- Index Page(/view/index.ejs): 
+ Index Page(/view/index.ejs):
  ```
 	sessionRequestId=58d1b23d602a4a0001e66f33
 	sessionStartAt=1507073590164
