@@ -16,6 +16,16 @@ iframe {
   height: 100%;
   border: none;
 }
+
+#end_time {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  width: 200px;
+  text-align: center;
+  color: #fff;
+  background-color: rgba(0,0,0,0.4);
+}
 .praise, .like {
   width: 30%;
   position: absolute;

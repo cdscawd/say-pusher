@@ -22,12 +22,12 @@
 	<iframe id="iframe" src=""></iframe>
 	<div class="control-box">
 		<div class="container">
-			<div id="prev_step"></div>
+			<div id="prev_step" title="Previous"></div>
 			<div class="encourage">
-				<div id="praise"></div>
-				<div id="like"></div>
-			</div>			
-			<div id="next_step"></div>
+				<div id="praise" title="Praise"></div>
+				<div id="like" title="Like"></div>
+			</div>
+			<div id="next_step" title="Next"></div>
 			<button id="close_session" style="display: none;">Close Session</button>
 		</div>
 	</div>
@@ -69,8 +69,8 @@
 	*  	http://localhost:8001/teacher?sessionRequestId=58d1b23d602a4a0161e17ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1247_4907_43490
 	*/
 
-	var IP = 'http://192.168.0.103:8769'
-	// var IP = 'https://open.api.qooco.com'
+	// var IP = 'http://192.168.0.103:8769'
+	var IP = 'https://open.api.qooco.com'
 	var pusher = {}
 	var channel;
 	var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1];
@@ -91,7 +91,8 @@
 			var pusherKey = pusher.pusherKey
 			var cluster = pusher.cluster
 			var channelName = pusher.channelName
-			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
+			// $('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
+			$('#iframe').attr('src', '/static/subjects/' + 'Qooco-KB-A02')
 
 			Pusher.logToConsole = true;
 			var pusher = new Pusher(pusherKey, {
@@ -220,6 +221,8 @@
 		$('#prev_step').on('click', function() {
 			playbackController.gotoPreviousStep()
 			channel.trigger("client-teacher-click", {type: 'PREV_STEP'})
+			$('#next_step').show()
+			$('#close_session').hide()
 		})
 		$('#next_step').on('click', function() {
 			var teacherSlideIndex = $('#slide_index').text()
@@ -244,34 +247,36 @@
 		playbackController.gotoTimestamp(teacherSlideIndex - 1, 0, 0, false)
 		channel.trigger("client-teacher-click", {
 			type: 'teacher_Slide_Index',
-			slide_index: teacherSlideIndex
+			slide_index: teacherSlideIndex,
+			local_count_down: window.localStorage.getItem('LOCAL_COUNT_DOWN')
 		})
 	})
 	
 	// 倒计时 1200000
 	function sessionCountDown() {
 		var min, sec, LOCAL_COUNT_DOWN
-		var timer = setInterval(function() {
-			var neadGet = (typeof window.localStorage.getItem('LOCAL_COUNT_DOWN')) == 'object' ? true : false
-			if (neadGet) {
+		var neadGet = (typeof window.localStorage.getItem('LOCAL_COUNT_DOWN')) == 'object' ? true : false
+		if (neadGet) {
+			var timer = setInterval(function() {
 				COUNT_DOWN = COUNT_DOWN - 1000
-			} else {
-				COUNT_DOWN = parseInt(window.localStorage.getItem('LOCAL_COUNT_DOWN'), 10)
-				COUNT_DOWN = COUNT_DOWN - 1000
+				min = parseInt((COUNT_DOWN / 1000 / 60), 10)
+				min = (min < 10) ? ('0' + min) : min
+				sec = parseInt((COUNT_DOWN - (min * 60 * 1000)) / 1000, 10)
+				sec = (sec < 10) ? ('0' + sec) : sec
+				$("#end_time").text(min + "' " + sec + "''")
+				LOCAL_COUNT_DOWN = (min * 60 * 1000) + (sec * 1000)
+				window.window.localStorage.setItem('LOCAL_COUNT_DOWN', LOCAL_COUNT_DOWN)
+				if (parseInt(LOCAL_COUNT_DOWN, 10) == 0) {
+					$('#end_time').text('End')
+					clearInterval(timer)
+				}
+			}, 1000)
+		} else {
+			LOCAL_COUNT_DOWN = localStorage.getItem('LOCAL_COUNT_DOWN')
+			if(LOCAL_COUNT_DOWN == 'NaN' || LOCAL_COUNT_DOWN == '0'){
+				$('#end_time').text('End')
 			}
-			min = parseInt((COUNT_DOWN / 1000 / 60), 10)
-			min = (min < 10) ? ('0' + min) : min
-			sec = parseInt((COUNT_DOWN - (min * 60 * 1000)) / 1000, 10)
-			sec = (sec < 10) ? ('0' + sec) : sec
-			
-			document.getElementById("end_time").innerHTML = min + "' " + sec + "''"
-			LOCAL_COUNT_DOWN = (min * 60 * 1000) + (sec * 1000)
-			window.window.localStorage.setItem('LOCAL_COUNT_DOWN', LOCAL_COUNT_DOWN)
-			if (sec < 0) {
-				document.getElementById("end_time").innerHTML = "End"
-				clearInterval(timer)
-			}
-		}, 1000)
+		}
 	}
 
 	window.onload = function() {

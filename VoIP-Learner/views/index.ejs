@@ -18,7 +18,8 @@
   </head>
 <body>
 <div id="container">
-  <iframe id="iframe" src=""></iframe>
+	<iframe id="iframe" src=""></iframe>
+	<div id="end_time">会话结束还有 <span></span></div>
   <img class="praise " src="static/images/praise.gif" alt="">
   <img class="like " src="static/images/like.gif" alt="">
   <div class="control" style="display: none;">
@@ -32,7 +33,6 @@
       <button id="like">like</button>
       <button id="sync">sync</button>
     </div>
-    <div id="end_time">课程结束倒计时 20' 00''</div>
     <div class="log">
       <p id="time"></p>
       <p id="slideIndex"></p>
@@ -53,8 +53,8 @@
 	//  http://localhost:8000/learner?sessionRequestId=51d1b23d602a4a0161e17ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1247_4907_43490
 	*/
 	// DEV Working Space
-	var IP = 'http://192.168.0.103:8769'
-	// var IP = 'https://open.api.qooco.com'
+	// var IP = 'http://192.168.0.103:8769'
+	var IP = 'https://open.api.qooco.com'
 	var pusher = {}
 	var channel
 	var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1]
@@ -62,7 +62,7 @@
 	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1]
 	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1]
 	var learner_Slide_Index
-	
+
 	$.get(IP + '/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
 		var status = res.status
 		if (status === 200) {
@@ -70,7 +70,8 @@
 			var pusherKey = pusher.pusherKey
 			var cluster = pusher.cluster
 			var channelName = pusher.channelName
-			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
+			// $('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
+			$('#iframe').attr('src', '/static/subjects/' + 'Qooco-KB-A02')
 
 			Pusher.logToConsole = true
 			var pusher = new Pusher(pusherKey, {
@@ -119,7 +120,8 @@
 						location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
 						break
 					case 'teacher_Slide_Index':
-						learner_Slide_Index = parseInt(EVENT_TYPE.slide_index, 10) 
+						learner_Slide_Index = parseInt(EVENT_TYPE.slide_index, 10)
+						COUNT_DOWN = EVENT_TYPE.local_count_down
 						$('#sync').trigger('click')
 						break
 				}
@@ -133,7 +135,7 @@
 		}
 	})
 
-	var COUNT_DOWN = 1200000
+	var COUNT_DOWN
 	var timeLabel = document.getElementById("time")
 	var slideIndexLabel = document.getElementById("slideIndex")
 	var slideIndex
@@ -179,7 +181,7 @@
 			playbackController = player.view().playbackController()
 			initPlaybackControllerEventsHandlers()
 			initButtonsEventsHandlers()
-			// sessionCountDown()
+			sessionCountDown()
 		}
 	}
 	
@@ -230,24 +232,16 @@
 	function sessionCountDown() {
 		var min, sec, LOCAL_COUNT_DOWN
 		var timer = setInterval(function() {
-			var neadGet = (typeof localStorage.getItem('LOCAL_COUNT_DOWN')) == 'object' ? true : false
-			if (neadGet) {
-				COUNT_DOWN = COUNT_DOWN - 1000
-			} else {
-				COUNT_DOWN = parseInt(localStorage.getItem('LOCAL_COUNT_DOWN'), 10)
-				COUNT_DOWN = COUNT_DOWN - 1000
-			}
-			min = parseInt((COUNT_DOWN / 1000 / 60), 10)
-			min = (min < 10) ? ('0' + min) : min
-			sec = parseInt((COUNT_DOWN - (min * 60 * 1000)) / 1000, 10)
-			sec = (sec < 10) ? ('0' + sec) : sec
-			document.getElementById("end_time").innerHTML = "课程结束倒计时 " + min + "' " + sec + "''"
-			LOCAL_COUNT_DOWN = (min * 60 * 1000) + (sec * 1000)
-			window.localStorage.setItem('LOCAL_COUNT_DOWN', LOCAL_COUNT_DOWN)
-			if (sec < 0) {
-				document.getElementById("end_time").innerHTML = "你的课程已经结束"
+			if (parseInt(COUNT_DOWN, 10) == 0) {
+				$('#end_time').text('会话已经结束')
 				clearInterval(timer)
 			}
+			COUNT_DOWN = COUNT_DOWN - 1000
+			min = parseInt((COUNT_DOWN / 1000 / 60), 10)
+			mined = (min < 10) ? ('0' + min) : min
+			sec = parseInt((COUNT_DOWN - (min * 60 * 1000)) / 1000, 10)
+			seced = (sec < 10) ? ('0' + sec) : sec
+			$("#end_time span").text(mined + "' " + seced + "''")
 		}, 1000)
 	}
 
