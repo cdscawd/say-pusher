@@ -56,7 +56,12 @@
 		</table>
 	</div>
 </div>
-<div id="Mask">Loading...</div>
+<div id="Loading">Loading...</div>
+<div id="Score-box">
+	Lorem ipsum dolor sit amet consectetur, adipisicing elit. Commodi placeat doloremque quidem qui! Unde, totam, tempora veritatis error ipsum aut aliquam laborum quasi assumenda, nostrum tenetur itaque consequatur dolorum quisquam.
+	Lorem ipsum dolor sit amet consectetur, adipisicing elit. Commodi placeat doloremque quidem qui! Unde, totam, tempora veritatis error ipsum aut aliquam laborum quasi assumenda, nostrum tenetur itaque consequatur dolorum quisquam.
+	Lorem ipsum dolor sit amet consectetur, adipisicing elit. Commodi placeat doloremque quidem qui! Unde, totam, tempora veritatis error ipsum aut aliquam laborum quasi assumenda, nostrum tenetur itaque consequatur dolorum quisquam.
+</div>
 <script src="http://zeptojs.com/zepto.min.js"></script>
 <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
 <!-- Ispring js -->
@@ -109,10 +114,10 @@
 				if (EVENT_TYPE.type == 'Learner_Slide_Index') {
 					var learner_slide_index = parseInt(EVENT_TYPE.slide_index, 10)
 					var teacher_slide_index = parseInt($('#slide_index').text(), 10)
-					$('#Mask').show()
+					$('#Loading').show()
 					$('#sync').trigger('click')
 					setTimeout(function() {
-						$('#Mask').hide()
+						$('#Loading').hide()
 					}, 1000)
 				}
 			})
@@ -175,7 +180,7 @@
 	// player init
 	function playerInit() { 
 		ispringPresentationConnector.register = function(player) {
-			$('#Mask').hide()
+			$('#Loading').hide()
 			$('#end_time').text("Running...")
 			var presentation = player.presentation()
 			slidesCount = presentation.slides().count()
