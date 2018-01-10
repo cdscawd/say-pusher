@@ -7,8 +7,6 @@
   box-sizing: border-box
 }
 html {
-  -webkit-user-select: none;
-  user-select: none;
   width: 100%;
   height: 100%;
 }
@@ -23,8 +21,6 @@ a {
 html,body {
   font-family: 'sans-serif', "Microsoft YaHei", "微软雅黑", "Tahoma", "Helvetica";
   font-size: 14px;
-  -webkit-user-select: none;
-  user-select: none; 
 }
 
 table {
