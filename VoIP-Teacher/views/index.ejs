@@ -33,7 +33,7 @@
 	</div>
   <img class="praise " src="static/images/praise.gif" alt="">
   <img class="like " src="static/images/like.gif" alt="">
-  <div class="control" style="display: none;">
+  <div class="control" style="display: ;">
 		<div class="buttons">
 			<div style="color:red">Test control</div>
 			<div>
@@ -60,18 +60,60 @@
 <div id="Score-box">
 	<div class="modal">
 		<h4 class="modal-title">Please evaluate this student's performance</h4>
-		
 
 		<div class="sorce-sentence">
-			<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. </p>
-			<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. </p>
-			<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. </p>
-			<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. </p>
+			<table>
+				<tbody>
+					<tr>
+						<td>
+							<div class="title">Pronunciation:</div>
+						</td>
+						<td>
+							<div class="score">
+								<span class=""></span>
+								<span></span>
+								<span></span>
+								<span></span>
+								<span></span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="title">Fluency:</div>
+						</td>
+						<td>
+							<div class="score">
+								<span class=""></span>
+								<span></span>
+								<span></span>
+								<span></span>
+								<span></span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="title">Language Usage:</div>
+						</td>
+						<td>
+							<div class="score">
+								<span class=""></span>
+								<span></span>
+								<span></span>
+								<span></span>
+								<span></span>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
-		 
+
+		<div id="score-submit">Submit Score</div>
 	</div>
 </div>
-<script src="http://zeptojs.com/zepto.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
 <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
 <!-- Ispring js -->
 <script>
@@ -105,8 +147,7 @@
 			var pusherKey = pusher.pusherKey
 			var cluster = pusher.cluster
 			var channelName = pusher.channelName
-			// $('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
-			$('#iframe').attr('src', '/static/subjects/' + 'Qooco-KB-A02')
+			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
 
 			Pusher.logToConsole = true;
 			var pusher = new Pusher(pusherKey, {
@@ -191,13 +232,11 @@
 		ispringPresentationConnector.register = function(player) {
 			$('#Loading').hide()
 			$('#end_time').text("Running...")
-			var presentation = player.presentation()
-			slidesCount = presentation.slides().count()
+			slidesCount = player.presentation().slides().count()
 			playbackController = player.view().playbackController()
 			initPlaybackControllerEventsHandlers()
 			initButtonsEventsHandlers(slidesCount)
 			sessionCountDown()
-			presentationController()
 		}
 	}
 
@@ -292,6 +331,12 @@
 			}
 		}
 	}
+
+	// score
+	$('.sorce-sentence .score span').on('mouseover', function() {
+		$(this).addClass('active')
+		$(this).prev('span').addClass('active')
+	})
 
 	window.onload = function() {
 		playerInit()

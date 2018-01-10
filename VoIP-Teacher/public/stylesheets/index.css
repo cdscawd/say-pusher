@@ -252,14 +252,70 @@ iframe {
   outline: 0;
   box-shadow: 0 3px 9px rgba(0,0,0,.5);
 }
-
-#Score-box .modal .sorce-sentence{}
-#Score-box .modal .sorce-sentence p{
-  padding: 4px 10px;
-  height: 40px;
-  line-height: 40px;
-  border-radius: 20px;
-  color: #fff;
+#Score-box .modal .modal-title{
+  border-bottom: 1px solid #eee;
   margin-bottom: 10px;
-  background-color: #5bc0de;
+  text-align: center;
+  font-size: 24px;
+}
+#Score-box .modal .sorce-sentence{}
+.sorce-sentence table{
+  width: 100%;
+}
+.sorce-sentence tr{
+  padding: 0;
+}
+.sorce-sentence td{
+  padding: 6px 10px;
+}
+.sorce-sentence table tr td:first-child {
+  width: 30%;
+}
+.sorce-sentence table tr td:last-child {
+  width: 70%;
+}
+.sorce-sentence .score span {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #000;
+  margin-right: 20px;
+  cursor: pointer;
+}
+.sorce-sentence .score span.active {
+  background-color: #ff9800;
+  border-color: #ff9800;
+}
+
+#score-submit {
+  background-color: #b9e563;
+  border-color: #b9e563;
+  color: #FFF;
+  font-weight: 300;
+  font-size: 16px;
+  font-family: "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  text-decoration: none;
+  text-align: center;
+  line-height: 40px;
+  height: 40px;
+  padding: 0 40px;
+  margin: 0 auto;
+  display: block;
+  cursor: pointer;
+  border: none;
+  box-sizing: border-box;
+  transition-property: all;
+  transition-duration: .3s;
+}
+#score-submit:hover {
+  background-color: #b9e563;
+  border-color: #b9e563;
+  color: #FFF;
+}
+#score-submit:active,
+#score-submit:focus {
+  background-color: #a1d243;
+  border-color: #a1d243;
+  color: #8bc220;
 }
