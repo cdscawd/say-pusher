@@ -120,12 +120,12 @@
 <!-- Ispring js -->
 <script>
 	/**
-	* 	sessionRequestId=58d1b23d602a4a0001e66f33
-	* 	sessionStartAt=1507073590164
-	* 	sessionEndAt=1507679587594
-	* 	lessonSlug=1072_2932_34582
-	*  	http://localhost:8001/teacher?sessionRequestId=58d1b23d602a4a0161e17ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1247_4907_43490
-	*/
+	* 		sessionRequestId=58d1b23d602a4a0001e66f33
+	* 		sessionStartAt=1507073590164
+	* 		sessionEndAt=1507679587594
+	* 		lessonSlug=1072_2932_34582
+	*			http://localhost:8001/teacher?sessionRequestId=58d1b23d602a4a0161e17ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1247_4907_43490
+	**/
 
 	// var IP = 'http://192.168.0.103:8769'
 	var IP = 'https://open.api.qooco.com'
@@ -141,7 +141,10 @@
 	var playbackController
 	var isPlayedPresentation
 	var ispringPresentationConnector = {}
-	
+	var pronunciation_number = 0
+	var fluency_number = 0
+	var usage_number = 0
+
 	$.get(IP + '/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
 		var status = res.status
 		if (status === 200) { 
@@ -174,7 +177,6 @@
 				}
 			})
 
-			// $.post(IP + '/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+'1072_2932_34572', function(res){
 			$.post(IP + '/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+lessonSlug, function(res){
 				if (res.status === 200) {
 					return
@@ -182,8 +184,7 @@
 			})
 		} else if(status === 400) {
 			$('#iframe').attr('src', '')
-			window.localStorage.removeItem('LOCAL_COUNT_DOWN')
-			window.localStorage.clear()
+			localStorage.clear()
 			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
 		} else if(status === 401) {
 			alert(res.error)
@@ -242,8 +243,7 @@
 		channel.trigger("client-teacher-click", {type: 'CLOSE_SESSION'})
 		$('#gotoFirstSlide').trigger("click") 
 		$.post(IP + '/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
-			window.localStorage.removeItem('LOCAL_COUNT_DOWN')
-			window.localStorage.clear()
+			localStorage.clear()
 			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
 		})
 	})
@@ -346,9 +346,6 @@
 	}
 
 	// end score 
-	var pronunciation_number = 0
-	var fluency_number = 0
-	var usage_number = 0
 	$('.pronunciation span').on('click', function(){
 		$(this).addClass('active')
 		$(this).prevAll('span').addClass('active')
@@ -389,10 +386,12 @@
 		$('.sorce-number').text(parseFloat(pronunciation_number + usage_number + fluency_number).toFixed(1))
 	})
 
+	// 关闭评分
 	$('.close-score-box').on('click', function() {
 		$('#Score-box').hide()
 	})
 
+	// 创建幻灯片
 	window.onload = function() {
 		playerInit()
 	}
