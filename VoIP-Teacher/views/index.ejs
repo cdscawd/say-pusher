@@ -18,7 +18,6 @@
   </head>
 <body>
 <div id="main">
-	<!-- <iframe id="iframe" src="static/curriculum/Qooco-KB-A01"></iframe> -->
 	<iframe id="iframe" src=""></iframe>
 	<div class="control-box">
 		<div class="container">
@@ -152,8 +151,8 @@
 			var pusherKey = pusher.pusherKey
 			var cluster = pusher.cluster
 			var channelName = pusher.channelName
-			// $('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
-			$('#iframe').attr('src', '/static/subjects/' + 'Getting started with iSpring (Web)')
+			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
+			// $('#iframe').attr('src', '/static/subjects/' + 'Getting started with iSpring (Web)')
 
 			Pusher.logToConsole = true;
 			var pusher = new Pusher(pusherKey, {
