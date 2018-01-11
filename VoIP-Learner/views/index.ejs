@@ -71,8 +71,8 @@
 			var pusherKey = pusher.pusherKey
 			var cluster = pusher.cluster
 			var channelName = pusher.channelName
-			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
-			// $('#iframe').attr('src', '/static/subjects/' + 'Qooco-KB-A02')
+			// $('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
+			$('#iframe').attr('src', '/static/subjects/' + 'Getting started with iSpring (Web)')
 
 			Pusher.logToConsole = true
 			var pusher = new Pusher(pusherKey, {
@@ -233,7 +233,7 @@
 		var min, sec
 		setTimeout(function() {
 			var timer = setInterval(function() {
-				if (parseInt(COUNT_DOWN, 10) == 0) {
+				if ((parseInt(COUNT_DOWN, 10) == 0) || COUNT_DOWN == undefined ) {
 					$('#end_time').text('会话已经结束')
 					clearInterval(this)
 				} else {
