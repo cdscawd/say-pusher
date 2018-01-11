@@ -4,6 +4,7 @@ html, body {
   margin: 0;
   padding: 0;
   background-color: #eee;
+  overflow: hidden;
 }
 
 #main {
@@ -60,7 +61,7 @@ iframe {
 }
 .encourage #like {
   background: url('../images/heart.png') no-repeat center / cover;
-  margin: 5px 4px;
+  margin: 5px 10px;
 }
 
 #close_session {
@@ -78,7 +79,7 @@ iframe {
   position: absolute;
   z-index: 999;
   left: 50%;
-  top: 50%;
+  top: -50%;
   margin-left: -60px;
   margin-top: -60px;
   opacity: 0;
@@ -234,10 +235,10 @@ iframe {
   right: 0;
   bottom: 0;
   z-index: 100;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.6);
 }
 #Score-box .modal {
-  position: absolute;
+  position: relative;
   left: 50%;
   top: 50%;
   z-index: 110;
@@ -252,15 +253,28 @@ iframe {
   outline: 0;
   box-shadow: 0 3px 9px rgba(0,0,0,.5);
 }
+.close-score-box {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 28px;
+  height: 28px;
+  background: url('/static/images/close-btn.png') no-repeat center center;
+  background-size: cover;
+  cursor: pointer;
+}
 #Score-box .modal .modal-title{
   border-bottom: 1px solid #eee;
-  margin-bottom: 10px;
+  padding: 10px 0;
   text-align: center;
   font-size: 24px;
 }
-#Score-box .modal .sorce-sentence{}
+#Score-box .modal .sorce-sentence{
+  padding: 40px 0;
+  display: flex;
+}
 .sorce-sentence table{
-  width: 100%;
+  width: 82%;
 }
 .sorce-sentence tr{
   padding: 0;
@@ -269,10 +283,19 @@ iframe {
   padding: 6px 10px;
 }
 .sorce-sentence table tr td:first-child {
-  width: 30%;
+  width: 40%;
 }
 .sorce-sentence table tr td:last-child {
-  width: 70%;
+  width: 60%;
+  cursor: pointer;
+}
+.sorce-sentence .score {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;  
 }
 .sorce-sentence .score span {
   display: inline-block;
@@ -281,13 +304,17 @@ iframe {
   border-radius: 50%;
   border: 2px solid #000;
   margin-right: 20px;
-  cursor: pointer;
 }
 .sorce-sentence .score span.active {
   background-color: #ff9800;
   border-color: #ff9800;
 }
-
+.sorce-number {
+  width: 18%;
+  font-size: 48px;
+  text-align: center;
+  line-height: 105px;
+}
 #score-submit {
   background-color: #b9e563;
   border-color: #b9e563;

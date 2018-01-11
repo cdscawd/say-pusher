@@ -57,8 +57,9 @@
 	</div>
 </div>
 <div id="Loading">Loading...</div>
-<div id="Score-box">
+<div id="Score-box" style="display: none;">
 	<div class="modal">
+		<div class="close-score-box"></div>
 		<h4 class="modal-title">Please evaluate this student's performance</h4>
 
 		<div class="sorce-sentence">
@@ -69,7 +70,7 @@
 							<div class="title">Pronunciation:</div>
 						</td>
 						<td>
-							<div class="score">
+							<div class="score pronunciation" data-type="pronunciation">
 								<span class=""></span>
 								<span></span>
 								<span></span>
@@ -83,7 +84,7 @@
 							<div class="title">Fluency:</div>
 						</td>
 						<td>
-							<div class="score">
+							<div class="score fluency" data-type="fluency">
 								<span class=""></span>
 								<span></span>
 								<span></span>
@@ -97,7 +98,7 @@
 							<div class="title">Language Usage:</div>
 						</td>
 						<td>
-							<div class="score">
+							<div class="score usage" data-type="usage">
 								<span class=""></span>
 								<span></span>
 								<span></span>
@@ -108,6 +109,7 @@
 					</tr>
 				</tbody>
 			</table>
+			<div class="sorce-number">0</div>
 		</div>
 
 		<div id="score-submit">Submit Score</div>
@@ -187,45 +189,6 @@
 			alert(res.error)
 		}
 	})
-	
-	// 结束会话
-	function ClosureSession() {
-		$('#next_step').hide()
-		$('#close_session').show()
-		window.localStorage.removeItem('LOCAL_COUNT_DOWN')
-	}
-	$('#close_session').on('click', function(){
-		channel.trigger("client-teacher-click", {type: 'CLOSE_SESSION'})
-		$('#gotoFirstSlide').trigger("click") 
-		$.post(IP + '/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
-			window.localStorage.removeItem('LOCAL_COUNT_DOWN')
-			window.localStorage.clear()
-			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
-		})
-	})
-
-	// praise 点赞
-	$('#praise').on('click', function() {
-		channel.trigger("client-teacher-click", {type: 'PRAISE'})
-		$('.praise').addClass('animated bounceIn')
-		setTimeout(function() {
-			$('.praise').removeClass('bounceIn').addClass('bounceOut')
-		},1000)
-		setTimeout(function() {
-			$('.praise').removeClass('animated bounceOut')
-		},1500)
-	})
-	// 喜欢 like
-	$('#like').on('click', function() {
-		channel.trigger("client-teacher-click", {type: 'LIKE'})
-		$('.like').addClass('animated bounceIn')
-		setTimeout(function() {
-			$('.like').removeClass('bounceIn').addClass('bounceOut')
-		},1000)
-		setTimeout(function() {
-			$('.like').removeClass('animated bounceOut')
-		},1500)
-	})
 
 	// player init
 	function playerInit() { 
@@ -239,6 +202,51 @@
 			sessionCountDown()
 		}
 	}
+
+	// praise 点赞
+	$('#praise').on('click', function() {
+		channel.trigger("client-teacher-click", {type: 'PRAISE'})
+		$('.praise').css('top','50%').addClass('animated bounceIn')
+		setTimeout(function() {
+			$('.praise').removeClass('bounceIn').addClass('bounceOut')
+		},1000)
+		setTimeout(function() {
+			$('.praise').css('top','-50%').removeClass('animated bounceOut')
+		},1500)
+	})
+	// 喜欢 like
+	$('#like').on('click', function() {
+		channel.trigger("client-teacher-click", {type: 'LIKE'})
+		$('.like').css('top','50%').addClass('animated bounceIn')
+		setTimeout(function() {
+			$('.like').removeClass('bounceIn').addClass('bounceOut')
+		},1000)
+		setTimeout(function() {
+			$('.like').css('top','-50%').removeClass('animated bounceOut')
+		},1500)
+	})
+
+	// 结束会话
+	function ClosureSession() {
+		$('#next_step').hide()
+		$('#close_session').show()
+		$('#Score-box').show()
+		window.localStorage.removeItem('LOCAL_COUNT_DOWN')
+	}
+
+	// if ($('#slideCount').text() == $('#slide_index').text()) {
+	// 	ClosureSession()
+	// }
+
+	$('#close_session').on('click', function(){
+		channel.trigger("client-teacher-click", {type: 'CLOSE_SESSION'})
+		$('#gotoFirstSlide').trigger("click") 
+		$.post(IP + '/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
+			window.localStorage.removeItem('LOCAL_COUNT_DOWN')
+			window.localStorage.clear()
+			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+		})
+	})
 
 	// player event
 	// Player-SDK/documentation/js-api/ispring.presenter.player.IPresentationPlaybackController.html#playbackState
@@ -257,6 +265,7 @@
 			timeLabel.innerHTML += (seconds < 10) ? "0" + seconds : seconds
 		})
 	}
+
 	// control button
 	function initButtonsEventsHandlers(slidesCount) {
 		$('#prev_slide').on('click', function() {
@@ -308,10 +317,14 @@
 	// 倒计时 1200000
 	function sessionCountDown() {
 		var min, sec, LOCAL_COUNT_DOWN
-		var neadGet = (typeof window.localStorage.getItem('LOCAL_COUNT_DOWN')) == 'object' ? true : false
-		if (neadGet) {
+		var LOCAL_COUNT_DOWN = window.localStorage.getItem('LOCAL_COUNT_DOWN')
+		if (LOCAL_COUNT_DOWN == null || LOCAL_COUNT_DOWN !== 0) {
 			var timer = setInterval(function() {
-				COUNT_DOWN = COUNT_DOWN - 1000
+				if (LOCAL_COUNT_DOWN == null) {
+					COUNT_DOWN = COUNT_DOWN - 1000
+				} else {
+					COUNT_DOWN = LOCAL_COUNT_DOWN - 1000
+				}
 				min = parseInt((COUNT_DOWN / 1000 / 60), 10)
 				min = (min < 10) ? ('0' + min) : min
 				sec = parseInt((COUNT_DOWN - (min * 60 * 1000)) / 1000, 10)
@@ -332,10 +345,52 @@
 		}
 	}
 
-	// score
-	$('.sorce-sentence .score span').on('mouseover', function() {
+	// end score 
+	var pronunciation_number = 0
+	var fluency_number = 0
+	var usage_number = 0
+	$('.pronunciation span').on('click', function(){
 		$(this).addClass('active')
-		$(this).prev('span').addClass('active')
+		$(this).prevAll('span').addClass('active')
+		var last_length = $(this).nextAll('.active').length
+		$(this).nextAll('span').removeClass('active')
+		var score_length = $(this).parent('.score').children('.active').length
+		if (last_length == 0) {
+			pronunciation_number = score_length * 0.2
+		} else {
+			pronunciation_number -= last_length * 0.2
+		}
+		$('.sorce-number').text(parseFloat(pronunciation_number + usage_number + fluency_number).toFixed(1))
+	})
+	$('.fluency span').on('click', function(){
+		$(this).addClass('active')
+		$(this).prevAll('span').addClass('active')
+		var last_length = $(this).nextAll('.active').length
+		$(this).nextAll('span').removeClass('active')
+		var score_length = $(this).parent('.score').children('.active').length
+		if (last_length == 0) {
+			fluency_number = score_length * 0.3
+		} else {
+			fluency_number -= last_length * 0.3
+		}
+		$('.sorce-number').text(parseFloat(pronunciation_number + usage_number + fluency_number).toFixed(1))
+	})
+	$('.usage span').on('click', function(){
+		$(this).addClass('active')
+		$(this).prevAll('span').addClass('active')
+		var last_length = $(this).nextAll('.active').length
+		$(this).nextAll('span').removeClass('active')
+		var score_length = $(this).parent('.score').children('.active').length
+		if (last_length == 0) {
+			usage_number = score_length * 0.5
+		} else {
+			usage_number -= last_length * 0.5
+		}
+		$('.sorce-number').text(parseFloat(pronunciation_number + usage_number + fluency_number).toFixed(1))
+	})
+
+	$('.close-score-box').on('click', function() {
+		$('#Score-box').hide()
 	})
 
 	window.onload = function() {
