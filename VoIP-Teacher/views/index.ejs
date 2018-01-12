@@ -134,7 +134,7 @@
 	var sessionEndAt = window.location.search.match(/sessionEndAt=(\S*)&lessonSlug/)[1];
 	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1];
 	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1];
-	var COUNT_DOWN = 1200000
+	var COUNT_DOWN = 20000
 	var timeLabel = document.getElementById("time")
 	var slidesCount
 	var playbackController
@@ -182,6 +182,24 @@
 					return
 				}
 			})
+
+			// 自动结束 会话相关
+			var session_register_time = Date.parse(new Date())
+			var session_end_time = Date.parse(new Date()) + 20000
+			if( (localStorage.getItem('session_register_time') == null) ) {
+				localStorage.setItem('session_register_time', session_register_time)
+				localStorage.setItem('session_end_time', session_end_time)
+			} else {
+				var session_now_time = Date.parse(new Date())
+				var session_end_time = parseInt(localStorage.getItem('session_end_time'), 10)
+				if (session_now_time > session_end_time) {
+					console.log('关闭会话...')
+					$.post(IP + '/voip-web-api/session/complete-session/' + sessionRequestId + '/recorded-time/' + sessionStartAt, function(res){
+						localStorage.clear()
+						location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+					})
+				}
+			}
 		} else if(status === 400) {
 			$('#iframe').attr('src', '')
 			localStorage.clear()
