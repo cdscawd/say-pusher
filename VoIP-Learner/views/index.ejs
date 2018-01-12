@@ -72,7 +72,6 @@
 			var cluster = pusher.cluster
 			var channelName = pusher.channelName
 			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
-			// $('#iframe').attr('src', '/static/subjects/' + 'Getting started with iSpring (Web)')
 
 			Pusher.logToConsole = true
 			var pusher = new Pusher(pusherKey, {
@@ -130,7 +129,7 @@
 
 			// 自动 结束会话相关
 			var session_register_time = Date.parse(new Date())
-			var session_end_time = Date.parse(new Date()) + 1200000 + 30000
+			var session_end_time = Date.parse(new Date()) + 30000 + 30000
 			if( (localStorage.getItem('session_register_time') == null) ) {
 				localStorage.setItem('session_register_time', session_register_time)
 				localStorage.setItem('session_end_time', session_end_time)

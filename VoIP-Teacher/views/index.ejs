@@ -134,7 +134,7 @@
 	var sessionEndAt = window.location.search.match(/sessionEndAt=(\S*)&lessonSlug/)[1];
 	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1];
 	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1];
-	var COUNT_DOWN = 1200000
+	var COUNT_DOWN = 30000
 	var timeLabel = document.getElementById("time")
 	var slidesCount
 	var playbackController
@@ -152,7 +152,6 @@
 			var cluster = pusher.cluster
 			var channelName = pusher.channelName
 			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
-			// $('#iframe').attr('src', '/static/subjects/' + 'Getting started with iSpring (Web)')
 
 			Pusher.logToConsole = true;
 			var pusher = new Pusher(pusherKey, {
@@ -170,9 +169,9 @@
 					var learner_slide_index = parseInt(EVENT_TYPE.slide_index, 10)
 					var teacher_slide_index = parseInt($('#slide_index').text(), 10)
 					$('#Loading').show()
-					$('#sync').trigger('click')
 					setTimeout(function() {
 						$('#Loading').hide()
+						$('#sync').trigger('click')
 					}, 1000)
 				}
 			})
@@ -185,7 +184,7 @@
 
 			// 自动结束 会话相关
 			var session_register_time = Date.parse(new Date())
-			var session_end_time = Date.parse(new Date()) + 1200000 + 30000
+			var session_end_time = Date.parse(new Date()) + 30000 + 30000
 			if( (localStorage.getItem('session_register_time') == null) ) {
 				localStorage.setItem('session_register_time', session_register_time)
 				localStorage.setItem('session_end_time', session_end_time)
@@ -317,6 +316,8 @@
 		$('#gotoFirstSlide').on('click', function() {
 			playbackController.gotoFirstSlide(false)
 			channel.trigger("client-teacher-click", {type: 'FIRST_SLIDE'})
+			$('#next_step').show()
+			$('#close_session').hide()
 		})
 	}
 
@@ -330,13 +331,13 @@
 		})
 	})
 	
-	// 倒计时 1200000
+	// 倒计时 30000
 	function sessionCountDown() {
 		var min, sec, LOCAL_COUNT_DOWN
 		var LOCAL_COUNT_DOWN = window.localStorage.getItem('LOCAL_COUNT_DOWN')
-		if (LOCAL_COUNT_DOWN == null || LOCAL_COUNT_DOWN !== 0) {
+		if (LOCAL_COUNT_DOWN == null ) {
 			var timer = setInterval(function() {
-				if (LOCAL_COUNT_DOWN == null) {
+				if (LOCAL_COUNT_DOWN == null ) {
 					COUNT_DOWN = COUNT_DOWN - 1000
 				} else {
 					COUNT_DOWN = LOCAL_COUNT_DOWN - 1000
