@@ -185,7 +185,7 @@
 
 			// 自动结束 会话相关
 			var session_register_time = Date.parse(new Date())
-			var session_end_time = Date.parse(new Date()) + 30000
+			var session_end_time = Date.parse(new Date()) + 1200000 + 30000
 			if( (localStorage.getItem('session_register_time') == null) ) {
 				localStorage.setItem('session_register_time', session_register_time)
 				localStorage.setItem('session_end_time', session_end_time)
@@ -285,6 +285,8 @@
 		$('#prev_slide').on('click', function() {
 			playbackController.gotoPreviousSlide()
 			channel.trigger("client-teacher-click", {type: 'PREV_SLIDE'})
+			$('#next_step').show()
+			$('#close_session').hide()
 		})
 		$('#next_slide').on('click', function() {
 			playbackController.gotoNextSlide()
