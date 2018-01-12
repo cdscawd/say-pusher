@@ -57,6 +57,7 @@
 	var IP = 'https://open.api.qooco.com'
 	var pusher = {}
 	var channel
+	var now_time = Date.parse(new Date())
 	var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1]
 	var sessionEndAt = window.location.search.match(/sessionEndAt=(\S*)&lessonSlug/)[1]
 	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1]
@@ -126,24 +127,6 @@
 						break
 				}
 			})
-
-			// 自动 结束会话相关
-			var session_register_time = Date.parse(new Date())
-			var session_end_time = Date.parse(new Date()) + 30000 + 30000
-			if( (localStorage.getItem('session_register_time') == null) ) {
-				localStorage.setItem('session_register_time', session_register_time)
-				localStorage.setItem('session_end_time', session_end_time)
-			} else {
-				var session_now_time = Date.parse(new Date())
-				var session_end_time = parseInt(localStorage.getItem('session_end_time'), 10)
-				if (session_now_time > session_end_time) {
-					console.log('关闭会话...')
-					$.post(IP + '/voip-web-api/session/complete-session/' + sessionRequestId + '/recorded-time/' + sessionStartAt, function(res){
-						localStorage.clear()
-						location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
-					})
-				}
-			}
 		} else if (status === 400) {
 			$('#iframe').attr('src', '')
 			localStorage.clear()
@@ -247,22 +230,29 @@
 
 	// 倒计时 1200000
 	function sessionCountDown() {
-		var min, sec
-		setTimeout(function() {
+		var min, sec;
+		// sessionStartAt sessionEndAt now_time
+		var session_time_long = sessionEndAt - now_time
+
+		if (session_time_long) {
 			var timer = setInterval(function() {
-				if ((parseInt(COUNT_DOWN, 10) == 0) || COUNT_DOWN == undefined ) {
+				session_time_long -= 1000
+				min = new Date(session_time_long).getMinutes()
+				min = (min < 10) ? ('0' + min) : min
+				sec = new Date(session_time_long).getSeconds()
+				sec = (sec < 10) ? ('0' + sec) : sec
+				$("#end_time span").text(min + "' " + sec + "''")
+
+				if (parseInt(session_time_long, 10) <= 0) {
 					$('#end_time').text('会话已经结束')
-					clearInterval(this)
-				} else {
-					COUNT_DOWN = COUNT_DOWN - 1000
-					min = parseInt((COUNT_DOWN / 1000 / 60), 10)
-					mined = (min < 10) ? ('0' + min) : min
-					sec = parseInt((COUNT_DOWN - (min * 60 * 1000)) / 1000, 10)
-					seced = (sec < 10) ? ('0' + sec) : sec
-					$("#end_time span").text(mined + "' " + seced + "''")
+					clearInterval(timer)
+					$.post(IP + '/voip-web-api/session/complete-session/' + sessionRequestId + '/recorded-time/' + sessionStartAt, function(res){
+						localStorage.clear()
+						location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+					})
 				}
 			}, 1000)
-		}, 3000);
+		}
 	}
 
 	window.onload = function() {

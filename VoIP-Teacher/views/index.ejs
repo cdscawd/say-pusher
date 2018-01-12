@@ -130,6 +130,7 @@
 	var IP = 'https://open.api.qooco.com'
 	var pusher = {}
 	var channel;
+	var now_time = Date.parse(new Date())
 	var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1];
 	var sessionEndAt = window.location.search.match(/sessionEndAt=(\S*)&lessonSlug/)[1];
 	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1];
@@ -181,24 +182,6 @@
 					return
 				}
 			})
-
-			// 自动结束 会话相关
-			var session_register_time = Date.parse(new Date())
-			var session_end_time = Date.parse(new Date()) + 30000 + 30000
-			if( (localStorage.getItem('session_register_time') == null) ) {
-				localStorage.setItem('session_register_time', session_register_time)
-				localStorage.setItem('session_end_time', session_end_time)
-			} else {
-				var session_now_time = Date.parse(new Date())
-				var session_end_time = parseInt(localStorage.getItem('session_end_time'), 10)
-				if (session_now_time > session_end_time) {
-					console.log('关闭会话...')
-					$.post(IP + '/voip-web-api/session/complete-session/' + sessionRequestId + '/recorded-time/' + sessionStartAt, function(res){
-						localStorage.clear()
-						location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
-					})
-				}
-			}
 		} else if(status === 400) {
 			$('#iframe').attr('src', '')
 			localStorage.clear()
@@ -331,35 +314,30 @@
 		})
 	})
 	
-	// 倒计时 30000
+	// 倒计时
 	function sessionCountDown() {
-		var min, sec, LOCAL_COUNT_DOWN
-		var LOCAL_COUNT_DOWN = window.localStorage.getItem('LOCAL_COUNT_DOWN')
-		if (LOCAL_COUNT_DOWN == null ) {
+		var min, sec;
+		// sessionStartAt sessionEndAt now_time
+		var session_time_long = sessionEndAt - now_time
+
+		if (session_time_long) {
 			var timer = setInterval(function() {
-				if (LOCAL_COUNT_DOWN == null ) {
-					COUNT_DOWN = COUNT_DOWN - 1000
-				} else {
-					COUNT_DOWN = LOCAL_COUNT_DOWN - 1000
-				}
-				min = parseInt((COUNT_DOWN / 1000 / 60), 10)
+				session_time_long -= 1000
+				min = new Date(session_time_long).getMinutes()
 				min = (min < 10) ? ('0' + min) : min
-				sec = parseInt((COUNT_DOWN - (min * 60 * 1000)) / 1000, 10)
+				sec = new Date(session_time_long).getSeconds()
 				sec = (sec < 10) ? ('0' + sec) : sec
 				$("#end_time").text(min + "' " + sec + "''")
-				LOCAL_COUNT_DOWN = (min * 60 * 1000) + (sec * 1000)
-				window.window.localStorage.setItem('LOCAL_COUNT_DOWN', LOCAL_COUNT_DOWN)
-				if (parseInt(LOCAL_COUNT_DOWN, 10) == 0) {
+
+				if (parseInt(session_time_long, 10) <= 0) {
 					$('#end_time').text('End')
 					clearInterval(timer)
+					$.post(IP + '/voip-web-api/session/complete-session/' + sessionRequestId + '/recorded-time/' + sessionStartAt, function(res){
+						localStorage.clear()
+						location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+					})
 				}
 			}, 1000)
-		} else {
-			LOCAL_COUNT_DOWN = localStorage.getItem('LOCAL_COUNT_DOWN')
-			if(LOCAL_COUNT_DOWN == 'NaN' || LOCAL_COUNT_DOWN == '0'){
-				$('#end_time').text('End')
-				localStorage.setItem('LOCAL_COUNT_DOWN', 0)
-			}
 		}
 	}
 
