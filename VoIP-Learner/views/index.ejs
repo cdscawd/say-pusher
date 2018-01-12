@@ -130,7 +130,7 @@
 
 			// 自动 结束会话相关
 			var session_register_time = Date.parse(new Date())
-			var session_end_time = Date.parse(new Date()) + 20000
+			var session_end_time = Date.parse(new Date()) + 30000
 			if( (localStorage.getItem('session_register_time') == null) ) {
 				localStorage.setItem('session_register_time', session_register_time)
 				localStorage.setItem('session_end_time', session_end_time)
@@ -145,7 +145,6 @@
 					})
 				}
 			}
-
 		} else if (status === 400) {
 			$('#iframe').attr('src', '')
 			localStorage.clear()

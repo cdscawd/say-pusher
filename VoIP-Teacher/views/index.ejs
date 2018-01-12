@@ -134,7 +134,7 @@
 	var sessionEndAt = window.location.search.match(/sessionEndAt=(\S*)&lessonSlug/)[1];
 	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1];
 	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1];
-	var COUNT_DOWN = 20000
+	var COUNT_DOWN = 1200000
 	var timeLabel = document.getElementById("time")
 	var slidesCount
 	var playbackController
@@ -185,7 +185,7 @@
 
 			// 自动结束 会话相关
 			var session_register_time = Date.parse(new Date())
-			var session_end_time = Date.parse(new Date()) + 20000
+			var session_end_time = Date.parse(new Date()) + 30000
 			if( (localStorage.getItem('session_register_time') == null) ) {
 				localStorage.setItem('session_register_time', session_register_time)
 				localStorage.setItem('session_end_time', session_end_time)
@@ -252,10 +252,6 @@
 		$('#Score-box').show()
 		window.localStorage.removeItem('LOCAL_COUNT_DOWN')
 	}
-
-	// if ($('#slideCount').text() == $('#slide_index').text()) {
-	// 	ClosureSession()
-	// }
 
 	$('#close_session').on('click', function(){
 		channel.trigger("client-teacher-click", {type: 'CLOSE_SESSION'})
