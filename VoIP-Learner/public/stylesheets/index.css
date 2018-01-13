@@ -16,9 +16,6 @@ iframe {
   border: none;
 }
 
-#end_time {
-
-}
 .praise, .like {
   width: 30%;
   position: absolute;
@@ -104,16 +101,22 @@ iframe {
   line-height: 30px;
 }
 
-#end_time {
+.global_state {
   position: fixed;
+  left: 0;
+  bottom: 0;
   right: 0;
-  bottom: 0;  
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(0,0,0,0.4);
+  padding: 6px 10px;
+  color: #fff;
   font-size: 1rem;
   line-height: 1.8rem;
-  text-align: center;
-  color: #fff;
-  padding: 6px 12px;
-  background-color: rgba(0,0,0,0.4);
+}
+
+#end_time {
+  
 }
 
 .buttons button {

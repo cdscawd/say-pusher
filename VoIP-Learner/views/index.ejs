@@ -20,8 +20,15 @@
 <body>
 <div id="container">
 	<iframe id="iframe" src=""></iframe>
-	<div id="end_time">会话结束还有 <span></span></div>
-  <img class="praise " src="static/images/praise.gif" alt="">
+	<div class="global_state">
+		<div class="slide_about">
+			当前课程页码: <p id="slideIndex"></p>
+		</div>
+		<div id="end_time">课程剩余时间：<span></span></div>
+	</div>
+	
+	
+	<img class="praise " src="static/images/praise.gif" alt="">
   <img class="like " src="static/images/like.gif" alt="">
   <div class="control" style="display: none;">
     <div class="buttons">
@@ -36,7 +43,7 @@
     </div>
     <div class="log">
       <p id="time"></p>
-      <p id="slideIndex"></p>
+      <!-- <p id="slideIndex"></p> -->
     </div>	
   </div>
 	<div id="logger" style="display: none;"></div>
@@ -193,7 +200,7 @@
 	function initPlaybackControllerEventsHandlers() {
 		playbackController.slideChangeEvent().addHandler(function(slideIndex) {
 			slideIndex = slideIndex
-			slideIndexLabel.innerHTML = "Slide: <span>" + (slideIndex + 1) + "</span> / " + slidesCount
+			slideIndexLabel.innerHTML = "<span>" + (slideIndex + 1) + "</span> / " + slidesCount
 		})
 	
 		playbackController.clock().tickEvent().addHandler(function(clock) {
