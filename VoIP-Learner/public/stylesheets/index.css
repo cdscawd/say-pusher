@@ -18,13 +18,7 @@ iframe {
 }
 
 #end_time {
-  position: fixed;
-  right: 10px;
-  bottom: 10px;
-  width: 200px;
-  text-align: center;
-  color: #fff;
-  background-color: rgba(0,0,0,0.4);
+
 }
 .praise, .like {
   width: 30%;
@@ -112,8 +106,15 @@ iframe {
 }
 
 #end_time {
-  font-size: 14px;
-  line-height: 30px;
+  position: fixed;
+  right: 0;
+  bottom: 0;  
+  font-size: 2rem;
+  line-height: 2.8rem;
+  text-align: center;
+  color: #fff;
+  padding: 10px 20px;
+  background-color: rgba(0,0,0,0.4);
 }
 
 .buttons button {
@@ -150,5 +151,12 @@ iframe {
   bottom: 0;
   z-index: 20;
   background-color: #fff;
-  padding: 20px;
+}
+#Mask span {
+  display: block;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.8rem;
 }

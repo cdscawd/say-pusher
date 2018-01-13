@@ -319,23 +319,25 @@
 		var min, sec;
 		// sessionStartAt sessionEndAt now_time
 		var session_time_long = sessionEndAt - now_time
-
 		if (session_time_long) {
 			var timer = setInterval(function() {
 				session_time_long -= 1000
 				min = new Date(session_time_long).getMinutes()
 				min = (min < 10) ? ('0' + min) : min
+				min < 1 && $('#end_time').css({'color': 'red','font-weight': 'bolder'})
 				sec = new Date(session_time_long).getSeconds()
 				sec = (sec < 10) ? ('0' + sec) : sec
 				$("#end_time").text(min + "' " + sec + "''")
-
 				if (parseInt(session_time_long, 10) <= 0) {
-					$('#end_time').text('End')
+					$('#end_time').text('End').css({'color': 'red','font-weight': 'bolder'})
 					clearInterval(timer)
-					$.post(IP + '/voip-web-api/session/complete-session/' + sessionRequestId + '/recorded-time/' + sessionStartAt, function(res){
-						localStorage.clear()
-						location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
-					})
+					setTimeout(function(){
+						$('#Score-box').show()
+					}, 850)
+					// $.post(IP + '/voip-web-api/session/complete-session/' + sessionRequestId + '/recorded-time/' + sessionStartAt, function(res){
+					// 	localStorage.clear()
+					// 	location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+					// })
 				}
 			}, 1000)
 		}
