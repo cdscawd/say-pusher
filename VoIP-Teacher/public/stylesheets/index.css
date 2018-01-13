@@ -4,7 +4,6 @@ html, body {
   margin: 0;
   padding: 0;
   background-color: #eee;
-  overflow: hidden;
 }
 
 #main {
@@ -149,19 +148,57 @@ iframe {
 }
 
 .control {
-  display: flex;
-  justify-content: space-between;
-  height: 30px;
-  line-height: 30px;
+  margin-top: 20px;
+  padding: 20px;
+  background: #fff;
+  
 }
+.control .container {
+  width: 722px;
+  margin: 0 auto;
+  background: #fff;
+  display: flex;
+  justify-content: space-between
+}
+.control .introduce {
+  flex: 1;
+}
+.control .introduce .title {
+  color:red;
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+.control .introduce .text {
+
+}
+.control .introduce .text img{
+  width: 24px;
+  height: 24px;
+  margin: 4px;
+}
+.control .buttons {
+  flex: 1;
+}
+.control .buttons .title {
+  color:red;
+  margin-bottom: 10px;
+  font-size: 24px;
+  padding-left: 80px;
+}
+.control .buttons li {
+  padding-left: 80px;
+  margin-bottom: 10px;
+}
+
 .control-box {
   max-width: 1267px;
   margin: 0 auto;
 }
+
 #end_time {
   line-height: 30px;
 }
-.buttons , #end_time, .log {
+#end_time, .log {
   display: inline-block;
 }
 .buttons button {
