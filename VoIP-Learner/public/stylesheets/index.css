@@ -6,7 +6,6 @@ html, body {
 }
 
 #container {
-/* width: 800px; */
   height: inherit;
   margin: 0 auto;
 }
@@ -109,11 +108,11 @@ iframe {
   position: fixed;
   right: 0;
   bottom: 0;  
-  font-size: 2rem;
-  line-height: 2.8rem;
+  font-size: 1rem;
+  line-height: 1.8rem;
   text-align: center;
   color: #fff;
-  padding: 10px 20px;
+  padding: 6px 12px;
   background-color: rgba(0,0,0,0.4);
 }
 
@@ -158,5 +157,5 @@ iframe {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  font-size: 2.8rem;
+  font-size: 2rem;
 }

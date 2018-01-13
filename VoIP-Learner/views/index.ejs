@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= main %></title>
+		<title><%= main %></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
     <link rel="stylesheet" type="text/css" href="static/stylesheets/reset.css">
 		<link rel="stylesheet" type="text/css" href="static/stylesheets/index.css">
 		<script>
@@ -245,12 +246,13 @@
 				sec = (sec < 10) ? ('0' + sec) : sec
 				$("#end_time span").text(min + "' " + sec + "''")
 				if (parseInt(session_time_long, 10) <= 0) {
-					$('#end_time').text('会话已经结束')
+					$('#end_time').text('会话已经结束').css({'color': 'red','font-weight': 'bolder'})
 					clearInterval(timer)
 					// $.post(IP + '/voip-web-api/session/complete-session/' + sessionRequestId + '/recorded-time/' + sessionStartAt, function(res){
 					// 	localStorage.clear()
 					// 	location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
 					// })
+					location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
 				}
 			}, 1000)
 		}

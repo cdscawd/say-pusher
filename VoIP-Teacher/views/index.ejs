@@ -235,14 +235,14 @@
 		window.localStorage.removeItem('LOCAL_COUNT_DOWN')
 	}
 
-	$('#close_session').on('click', function(){
-		channel.trigger("client-teacher-click", {type: 'CLOSE_SESSION'})
-		$('#gotoFirstSlide').trigger("click") 
-		$.post(IP + '/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
-			localStorage.clear()
-			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
-		})
-	})
+	// $('#close_session').on('click', function(){
+	// 	channel.trigger("client-teacher-click", {type: 'CLOSE_SESSION'})
+	// 	$('#gotoFirstSlide').trigger("click") 
+	// 	$.post(IP + '/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
+	// 		localStorage.clear()
+	// 		location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+	// 	})
+	// })
 
 	// player event
 	// Player-SDK/documentation/js-api/ispring.presenter.player.IPresentationPlaybackController.html#playbackState
