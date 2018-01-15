@@ -67,7 +67,9 @@
 		</table>
 	</div>
 </div>
-<div id="Loading">Loading...</div>
+<div id="Mask">
+	<span>Loading...</span>	
+</div>
 <div id="Score-box" style="display: none;">
 	<div class="modal">
 		<div class="close-score-box"></div>
@@ -181,9 +183,9 @@
 				if (EVENT_TYPE.type == 'Learner_Slide_Index') {
 					var learner_slide_index = parseInt(EVENT_TYPE.slide_index, 10)
 					var teacher_slide_index = parseInt($('#slide_index').text(), 10)
-					$('#Loading').show()
+					$('#Mask').show()
 					setTimeout(function() {
-						$('#Loading').hide()
+						// $('#Mask').hide()
 						$('#sync').trigger('click')
 					}, 1000)
 				}
@@ -206,7 +208,7 @@
 	// player init
 	function playerInit() { 
 		ispringPresentationConnector.register = function(player) {
-			$('#Loading').hide()
+			$('#Mask').hide()
 			$('#end_time').text("Running...")
 			slidesCount = player.presentation().slides().count()
 			playbackController = player.view().playbackController()

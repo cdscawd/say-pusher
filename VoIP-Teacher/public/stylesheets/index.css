@@ -265,7 +265,14 @@ iframe {
   bottom: 0;
   z-index: 20;
   background-color: #fff;
-  padding: 20px;
+}
+#Mask span {
+  display: block;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
 }
 
 #Score-box {
