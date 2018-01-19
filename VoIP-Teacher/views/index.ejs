@@ -72,7 +72,7 @@
 </div>
 <div id="Score-box" style="display: none;">
 	<div class="modal">
-		<!-- <div class="close-score-box"></div> -->
+		<div class="close-score-box"></div>
 		<h4 class="modal-title">Please evaluate this student's performance</h4>
 
 		<div class="sorce-sentence">
@@ -245,7 +245,7 @@
 	function ClosureSession() {
 		$('#next_step').hide()
 		$('#close_session').show()
-		$('#Score-box').show()
+		// $('#Score-box').show()
 		window.localStorage.removeItem('LOCAL_COUNT_DOWN')
 	}
 
@@ -264,6 +264,15 @@
 		playbackController.slideChangeEvent().addHandler(function(slideIndex) {
 			$('#slide_index').text(slideIndex + 1)
 			$('#slideCount').text(slidesCount)
+			setTimeout(function(){
+				var slideCount = $('#slideCount').text()
+				var slideIndex = $('#slide_index').text()
+				if ( slideCount == slideIndex ) {
+					$('#next_step').hide()
+					$('#close_session').show()
+					// $('#Score-box').show()
+				} 
+			}, 1000)
 		})
 	
 		playbackController.clock().tickEvent().addHandler(function(clock) {
@@ -348,7 +357,7 @@
 					$('#end_time').text('End').css({'color': 'red','font-weight': 'bolder'})
 					clearInterval(timer)
 					setTimeout(function(){
-						$('#Score-box').show()
+						// $('#Score-box').show()
 					}, 850)
 					$.post(IP + '/voip-web-api/session/complete-session/' + sessionRequestId + '/recorded-time/' + sessionStartAt, function(res){
 						localStorage.clear()
@@ -403,7 +412,7 @@
 
 	// 关闭评分
 	$('.close-score-box').on('click', function() {
-		$('#Score-box').hide()
+		// $('#Score-box').hide()
 	})
 
 	// 发送评分
@@ -430,7 +439,7 @@
 			},
 			error: function(err) {
 				alert('network error!')
-				$('#Score-box').hide()
+				// $('#Score-box').hide()
 			}
 		});
 	})
@@ -438,12 +447,7 @@
 	// 创建幻灯片
 	window.onload = function() {
 		playerInit()
-		setTimeout(function(){
-			if ($('#slideCount').text() == $('#slide_index').text()) {
-				$('#next_step').hide()
-				$('#close_session').show()
-			} 
-		},2000)
+
 	}
 </script>
 </body>
