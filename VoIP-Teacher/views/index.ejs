@@ -72,7 +72,7 @@
 </div>
 <div id="Score-box" style="display: none;">
 	<div class="modal">
-		<div class="close-score-box"></div>
+		<!-- <div class="close-score-box"></div> -->
 		<h4 class="modal-title">Please evaluate this student's performance</h4>
 
 		<div class="sorce-sentence">
@@ -185,7 +185,7 @@
 					var teacher_slide_index = parseInt($('#slide_index').text(), 10)
 					$('#Mask').show()
 					setTimeout(function() {
-						// $('#Mask').hide()
+						$('#Mask').hide()
 						$('#sync').trigger('click')
 					}, 1000)
 				}
@@ -249,14 +249,14 @@
 		window.localStorage.removeItem('LOCAL_COUNT_DOWN')
 	}
 
-	// $('#close_session').on('click', function(){
-	// 	channel.trigger("client-teacher-click", {type: 'CLOSE_SESSION'})
-	// 	$('#gotoFirstSlide').trigger("click") 
-	// 	$.post(IP + '/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
-	// 		localStorage.clear()
-	// 		location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
-	// 	})
-	// })
+	$('#close_session').on('click', function(){
+		channel.trigger("client-teacher-click", {type: 'CLOSE_SESSION'})
+		$('#gotoFirstSlide').trigger("click") 
+		$.post(IP + '/voip-web-api/session/complete-session/'+sessionRequestId+'/recorded-time/'+sessionStartAt, function(res){
+			localStorage.clear()
+			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+		})
+	})
 
 	// player event
 	// Player-SDK/documentation/js-api/ispring.presenter.player.IPresentationPlaybackController.html#playbackState
@@ -278,6 +278,8 @@
 
 	// control button
 	function initButtonsEventsHandlers(slidesCount) {
+		var slideIndex = $('#slide_index').text()
+		
 		$('#prev_slide').on('click', function() {
 			playbackController.gotoPreviousSlide()
 			channel.trigger("client-teacher-click", {type: 'PREV_SLIDE'})
@@ -348,13 +350,14 @@
 					setTimeout(function(){
 						$('#Score-box').show()
 					}, 850)
-					// $.post(IP + '/voip-web-api/session/complete-session/' + sessionRequestId + '/recorded-time/' + sessionStartAt, function(res){
-					// 	localStorage.clear()
-					// 	location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
-					// })
+					$.post(IP + '/voip-web-api/session/complete-session/' + sessionRequestId + '/recorded-time/' + sessionStartAt, function(res){
+						localStorage.clear()
+						location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+					})
 				}
 			}, 1000)
 		}
+		
 	}
 
 	// end score 
@@ -403,9 +406,44 @@
 		$('#Score-box').hide()
 	})
 
+	// 发送评分
+	$('#score-submit').on('click', function() {
+		pronunciation_number = parseFloat(pronunciation_number).toFixed(1)
+		fluency_number = parseFloat(fluency_number).toFixed(1)
+		usage_number = parseFloat(usage_number).toFixed(1)
+		var data = {
+			pronunciation: pronunciation_number, 
+			fluency: fluency_number,
+			langUsage: usage_number
+		}
+		data = JSON.stringify(data)
+		$.ajax({
+			type: "POST",
+			url: 'http://appdev.qooco.com/api/voip/feedback/teacher?sessionId='+sessionRequestId,
+			data: data,
+			contentType: 'application/json',
+			success: function(res){
+				$.post(IP + '/voip-web-api/session/complete-session/' + sessionRequestId + '/recorded-time/' + sessionStartAt, function(res){
+					localStorage.clear()
+					location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+				})
+			},
+			error: function(err) {
+				alert('network error!')
+				$('#Score-box').hide()
+			}
+		});
+	})
+
 	// 创建幻灯片
 	window.onload = function() {
 		playerInit()
+		setTimeout(function(){
+			if ($('#slideCount').text() == $('#slide_index').text()) {
+				$('#next_step').hide()
+				$('#close_session').show()
+			} 
+		},2000)
 	}
 </script>
 </body>
