@@ -149,7 +149,6 @@
 	var sessionEndAt = window.location.search.match(/sessionEndAt=(\S*)&lessonSlug/)[1];
 	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1];
 	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1];
-	var COUNT_DOWN = 30000
 	var timeLabel = document.getElementById("time")
 	var slidesCount
 	var playbackController
@@ -159,63 +158,70 @@
 	var fluency_number = 0
 	var usage_number = 0
 
-	$.get(IP + '/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
-		var status = res.status
-		if (status === 200) { 
-			pusher = res.data
-			var pusherKey = pusher.pusherKey
-			var cluster = pusher.cluster
-			var channelName = pusher.channelName
+	// pusher 注册 会话监听相关
+	function pusherKey(sessionRequestId) {
+		$.get(IP + '/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
+			var status = res.status
+			if (status === 200) { 
+				pusher = res.data
+				var pusherKey = pusher.pusherKey
+				var cluster = pusher.cluster
+				var channelName = pusher.channelName
 
-			var loading = (localStorage.getItem('session_id') == null)
-      if ( loading ) {
-        localStorage.setItem('session_id', sessionRequestId)
-      } else {
-				var LOCAL_SESSION_ID = localStorage.getItem('session_id')
-        if ( LOCAL_SESSION_ID !== sessionRequestId) {
-					localStorage.clear()
-					location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
-				}
+				$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
+
+				Pusher.logToConsole = true;
+				var pusher = new Pusher(pusherKey, {
+					cluster: cluster,
+					encrypted: true,
+					authTransport: 'jsonp',
+					authEndpoint: IP + '/voip-web-api/pusher/auth'
+				});
+				channel = pusher.subscribe(channelName)
+				
+				// 同步处理 about 前进后退触发事件完成 。。。 学生端处理
+				channel.bind('client-teacher-click', function (data) {
+					var EVENT_TYPE = data
+					if (EVENT_TYPE.type == 'Learner_Slide_Index') {
+						var learner_slide_index = parseInt(EVENT_TYPE.slide_index, 10)
+						var teacher_slide_index = parseInt($('#slide_index').text(), 10)
+						$('#Mask').show()
+						setTimeout(function() {
+							$('#Mask').hide()
+							$('#sync').trigger('click')
+						}, 1000)
+					}
+				})
+
+				$.post(IP + '/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+lessonSlug, function(res){
+					if (res.status === 200) {
+						return
+					}
+				})
+			} else if(status === 400) {
+				$('#iframe').attr('src', '')
+				localStorage.clear()
+				location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+			} else if(status === 401) {
+				alert(res.error)
 			}
+		})
+	}
 
-			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
-
-			Pusher.logToConsole = true;
-			var pusher = new Pusher(pusherKey, {
-				cluster: cluster,
-				encrypted: true,
-				authTransport: 'jsonp',
-				authEndpoint: IP + '/voip-web-api/pusher/auth'
-			});
-			channel = pusher.subscribe(channelName)
-			
-			// 同步处理 about 前进后退触发事件完成 。。。 学生端处理
-			channel.bind('client-teacher-click', function (data) {
-				var EVENT_TYPE = data
-				if (EVENT_TYPE.type == 'Learner_Slide_Index') {
-					var learner_slide_index = parseInt(EVENT_TYPE.slide_index, 10)
-					var teacher_slide_index = parseInt($('#slide_index').text(), 10)
-					$('#Mask').show()
-					setTimeout(function() {
-						$('#Mask').hide()
-						$('#sync').trigger('click')
-					}, 1000)
-				}
-			})
-
-			$.post(IP + '/voip-web-api/session/start-session/'+sessionRequestId+'/from/'+sessionStartAt+'/to/'+sessionEndAt+'/slug/'+lessonSlug, function(res){
-				if (res.status === 200) {
-					return
-				}
-			})
-		} else if(status === 400) {
-			$('#iframe').attr('src', '')
+	var loading = (localStorage.getItem('session_id') == null)
+	// 本地local无sessionid 创建新会话
+	if ( loading ) {
+		localStorage.setItem('session_id', sessionRequestId)
+		pusherKey(sessionRequestId)
+	} else {
+	// sessionid 手动切换 解决幻灯片强制首页
+		var LOCAL_SESSION_ID = localStorage.getItem('session_id')
+		if ( LOCAL_SESSION_ID !== sessionRequestId) {
 			localStorage.clear()
-			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
-		} else if(status === 401) {
-			alert(res.error)
+			location.reload()
 		}
-	})
+		pusherKey(LOCAL_SESSION_ID)
+	}
 
 	// player init
 	function playerInit() { 
@@ -258,7 +264,6 @@
 		$('#next_step').hide()
 		$('#close_session').show()
 		// $('#Score-box').show()
-		window.localStorage.removeItem('LOCAL_COUNT_DOWN')
 	}
 
 	$('#close_session').on('click', function(){
@@ -351,7 +356,6 @@
 		channel.trigger("client-teacher-click", {
 			type: 'teacher_Slide_Index',
 			slide_index: teacherSlideIndex,
-			local_count_down: window.localStorage.getItem('LOCAL_COUNT_DOWN')
 		})
 	})
 	
@@ -460,10 +464,9 @@
 		});
 	})
 
-	// 创建幻灯片
+	// player start
 	window.onload = function() {
 		playerInit()
-
 	}
 </script>
 </body>

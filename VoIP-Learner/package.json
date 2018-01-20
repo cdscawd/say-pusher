@@ -1,6 +1,6 @@
 {
   "name": "VoIP-Learner",
-  "version": "0.0.1",
+  "version": "0.0.11",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",

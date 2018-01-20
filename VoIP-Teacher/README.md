@@ -17,7 +17,7 @@ or
 $ forever start -a -l forever.log -o bin/log/out.log -e bin/log/out.log bin/www
 ```
 
-#About
+#URL
  Teacher server port is 8001 (/bin/www)
  Index Page(/view/index.ejs):
  ```
@@ -38,3 +38,13 @@ error:   Cannot start forever
 error:   log file /root/.forever/forever.log exists. Use the -a or --append option to append log.
 [root@mango VoIP-Teacher]# forever start -a -l forever.log -o out.log -e err.log bin/www
 ```
+
+### 本次版本更新内容
+    * 2018/01/20
+    * 本次版本号："version": "0.0.11"
+    * 上次版本号："version": "0.0.1"；
+    内容：
+        - 同步细节处理
+
+### 历史版本更新内容
+     

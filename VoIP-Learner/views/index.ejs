@@ -73,99 +73,105 @@
 	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1]
 	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1]
 	var learner_Slide_Index
-	var COUNT_DOWN
 
-	$.get(IP + '/voip-web-api/pusher/key?lessonSlug=' + lessonSlug + '&sessionRequestId=' + sessionRequestId, function(res){
-		var status = res.status
-		if (status === 200) {
-			pusher = res.data
-			var pusherKey = pusher.pusherKey
-			var cluster = pusher.cluster
-			var channelName = pusher.channelName
-			
-			var loading = (localStorage.getItem('session_id') == null)
-      if ( loading ) {
-        localStorage.setItem('session_id', sessionRequestId)
-      } else {
-				var LOCAL_SESSION_ID = localStorage.getItem('session_id')
-        if ( LOCAL_SESSION_ID !== sessionRequestId) {
-					localStorage.clear()
-					location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
-				}
-			}
-			
-			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
+	// pusher 注册 会话监听相关
+	function pusherKey(sessionRequestId) {
+		$.get(IP + '/voip-web-api/pusher/key?lessonSlug=' + lessonSlug + '&sessionRequestId=' + sessionRequestId, function(res){
+			var status = res.status
+			if (status === 200) {
+				pusher = res.data
+				var pusherKey = pusher.pusherKey
+				var cluster = pusher.cluster
+				var channelName = pusher.channelName
+				
+				$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
 
-			Pusher.logToConsole = true
-			var pusher = new Pusher(pusherKey, {
-				cluster: cluster,
-				encrypted: true,
-				authTransport: 'jsonp',
-				authEndpoint: IP + '/voip-web-api/pusher/auth'
-			})
-			channel = pusher.subscribe(channelName)
-
-			setTimeout(function(){
-				channel.trigger("client-teacher-click", {
-					type: 'Learner_Slide_Index',
-					slide_index: parseInt($('#slideIndex span').text(), 10)
+				Pusher.logToConsole = true
+				var pusher = new Pusher(pusherKey, {
+					cluster: cluster,
+					encrypted: true,
+					authTransport: 'jsonp',
+					authEndpoint: IP + '/voip-web-api/pusher/auth'
 				})
-				$('#Mask').hide()
-			}, 3000)
+				channel = pusher.subscribe(channelName)
 
-			channel.bind('client-teacher-click', function (data) {
-				var EVENT_TYPE = data
-				var TEACHER_SLIDE_INDEX = parseInt(EVENT_TYPE.teacherSlideIndex)
-				var LEARNERSLIDE_INDEX = parseInt($('#slideIndex span').text())
-				switch (EVENT_TYPE.type) {
-					case 'NEXT_STEP':
-						if ( TEACHER_SLIDE_INDEX !== LEARNERSLIDE_INDEX ) {
-							playbackController.gotoTimestamp(TEACHER_SLIDE_INDEX - 1, 0, 0, false)
-						}
-						$('#next_step').trigger('click')
-						break
-					case 'PREV_STEP':
-						if ( TEACHER_SLIDE_INDEX !== LEARNERSLIDE_INDEX ) {
-							playbackController.gotoTimestamp(TEACHER_SLIDE_INDEX, 0, 0, false)
+				setTimeout(function(){
+					channel.trigger("client-teacher-click", {
+						type: 'Learner_Slide_Index',
+						slide_index: parseInt($('#slideIndex span').text(), 10)
+					})
+					$('#Mask').hide()
+				}, 3000)
+
+				channel.bind('client-teacher-click', function (data) {
+					var EVENT_TYPE = data
+					var TEACHER_SLIDE_INDEX = parseInt(EVENT_TYPE.teacherSlideIndex)
+					var LEARNERSLIDE_INDEX = parseInt($('#slideIndex span').text())
+					switch (EVENT_TYPE.type) {
+						case 'NEXT_STEP':
+							if ( TEACHER_SLIDE_INDEX !== LEARNERSLIDE_INDEX ) {
+								playbackController.gotoTimestamp(TEACHER_SLIDE_INDEX - 1, 0, 0, false)
+							}
+							$('#next_step').trigger('click')
+							break
+						case 'PREV_STEP':
+							if ( TEACHER_SLIDE_INDEX !== LEARNERSLIDE_INDEX ) {
+								playbackController.gotoTimestamp(TEACHER_SLIDE_INDEX, 0, 0, false)
+								$('#prev_step').trigger('click')
+							}
 							$('#prev_step').trigger('click')
-						}
-						$('#prev_step').trigger('click')
-						break
-					case 'NEXT_SLIDE':
-						$('#next_slide').trigger('click')
-						break
-					case 'PREV_SLIDE':
-						$('#prev_slide').trigger('click')
-						break
-					case 'FIRST_SLIDE':
-						$('#gotoFirstSlide').trigger('click')
-						break
-					case 'PRAISE':
-						$('#praise').trigger('click')
-						break
-					case 'LIKE':
-						$('#like').trigger('click')
-						break
-					case 'CLOSE_SESSION':
-						$('#gotoFirstSlide').trigger('click') 
-						localStorage.clear()
-						location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
-						break
-					case 'teacher_Slide_Index':
-						learner_Slide_Index = parseInt(EVENT_TYPE.slide_index, 10)
-						COUNT_DOWN = EVENT_TYPE.local_count_down
-						$('#sync').trigger('click')
-						break
-				}
-			})
-		} else if (status === 400) {
-			$('#iframe').attr('src', '')
-			localStorage.clear()
-			location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
-		} else if (status === 401) {
-			alert(res.error)
-		}
-	})
+							break
+						case 'NEXT_SLIDE':
+							$('#next_slide').trigger('click')
+							break
+						case 'PREV_SLIDE':
+							$('#prev_slide').trigger('click')
+							break
+						case 'FIRST_SLIDE':
+							$('#gotoFirstSlide').trigger('click')
+							break
+						case 'PRAISE':
+							$('#praise').trigger('click')
+							break
+						case 'LIKE':
+							$('#like').trigger('click')
+							break
+						case 'CLOSE_SESSION':
+							$('#gotoFirstSlide').trigger('click') 
+							localStorage.clear()
+							location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+							break
+						case 'teacher_Slide_Index':
+							learner_Slide_Index = parseInt(EVENT_TYPE.slide_index, 10)
+							$('#sync').trigger('click')
+							break
+					}
+				})
+			} else if (status === 400) {
+				$('#iframe').attr('src', '')
+				localStorage.clear()
+				location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+			} else if (status === 401) {
+				alert(res.error)
+			}
+		})
+	}
+
+	var loading = (localStorage.getItem('session_id') == null)
+	// 本地local无sessionid 创建新会话
+	if ( loading ) {
+		localStorage.setItem('session_id', sessionRequestId)
+		pusherKey(sessionRequestId)
+	} else {
+		// sessionid 手动切换 解决幻灯片强制首页
+		var LOCAL_SESSION_ID = localStorage.getItem('session_id')
+			localStorage.setItem('session_id', sessionRequestId)
+			if ( LOCAL_SESSION_ID !== sessionRequestId) {
+				localStorage.clear()
+				location.reload()
+			}
+			pusherKey(LOCAL_SESSION_ID)
+	}
 
 	var timeLabel = document.getElementById("time")
 	var slideIndexLabel = document.getElementById("slideIndex")
@@ -285,7 +291,8 @@
 			}, 1000)
 		}
 	}
-
+	
+	// player start
 	window.onload = function() {
 		playerInit()
 	}
