@@ -3,8 +3,8 @@
   "version": "0.0.11",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
-    "server": "forever start -l forever.log -o out.log -e err.log ./bin/www"
+    "dev": "node ./bin/www",
+    "start": "forever start -a -l forever.log -o bin/log/out.log -e bin/log/out.log bin/www"
   },
   "dependencies": {
     "body-parser": "~1.18.2",
