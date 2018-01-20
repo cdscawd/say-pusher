@@ -82,6 +82,18 @@
 			var pusherKey = pusher.pusherKey
 			var cluster = pusher.cluster
 			var channelName = pusher.channelName
+			
+			var loading = (localStorage.getItem('session_id') == null)
+      if ( loading ) {
+        localStorage.setItem('session_id', sessionRequestId)
+      } else {
+				var LOCAL_SESSION_ID = localStorage.getItem('session_id')
+        if ( LOCAL_SESSION_ID !== sessionRequestId) {
+					localStorage.clear()
+					location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+				}
+			}
+			
 			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
 
 			Pusher.logToConsole = true
@@ -103,27 +115,36 @@
 
 			channel.bind('client-teacher-click', function (data) {
 				var EVENT_TYPE = data
+				var TEACHER_SLIDE_INDEX = parseInt(EVENT_TYPE.teacherSlideIndex)
+				var LEARNERSLIDE_INDEX = parseInt($('#slideIndex span').text())
 				switch (EVENT_TYPE.type) {
 					case 'NEXT_STEP':
-						$('#next_step').trigger('click') 
+						if ( TEACHER_SLIDE_INDEX !== LEARNERSLIDE_INDEX ) {
+							playbackController.gotoTimestamp(TEACHER_SLIDE_INDEX - 1, 0, 0, false)
+						}
+						$('#next_step').trigger('click')
 						break
 					case 'PREV_STEP':
-						$('#prev_step').trigger('click') 
+						if ( TEACHER_SLIDE_INDEX !== LEARNERSLIDE_INDEX ) {
+							playbackController.gotoTimestamp(TEACHER_SLIDE_INDEX, 0, 0, false)
+							$('#prev_step').trigger('click')
+						}
+						$('#prev_step').trigger('click')
 						break
 					case 'NEXT_SLIDE':
-						$('#next_slide').trigger('click') 
+						$('#next_slide').trigger('click')
 						break
 					case 'PREV_SLIDE':
-						$('#prev_slide').trigger('click') 
+						$('#prev_slide').trigger('click')
 						break
 					case 'FIRST_SLIDE':
-						$('#gotoFirstSlide').trigger('click') 
+						$('#gotoFirstSlide').trigger('click')
 						break
 					case 'PRAISE':
-						$('#praise').trigger('click') 
+						$('#praise').trigger('click')
 						break
 					case 'LIKE':
-						$('#like').trigger('click') 
+						$('#like').trigger('click')
 						break
 					case 'CLOSE_SESSION':
 						$('#gotoFirstSlide').trigger('click') 

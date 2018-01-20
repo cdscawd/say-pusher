@@ -166,6 +166,18 @@
 			var pusherKey = pusher.pusherKey
 			var cluster = pusher.cluster
 			var channelName = pusher.channelName
+
+			var loading = (localStorage.getItem('session_id') == null)
+      if ( loading ) {
+        localStorage.setItem('session_id', sessionRequestId)
+      } else {
+				var LOCAL_SESSION_ID = localStorage.getItem('session_id')
+        if ( LOCAL_SESSION_ID !== sessionRequestId) {
+					localStorage.clear()
+					location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+				}
+			}
+
 			$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
 
 			Pusher.logToConsole = true;
@@ -304,8 +316,12 @@
 			}
 		})
 		$('#prev_step').on('click', function() {
+			var teacherSlideIndex = $('#slide_index').text()
 			playbackController.gotoPreviousStep()
-			channel.trigger("client-teacher-click", {type: 'PREV_STEP'})
+			channel.trigger("client-teacher-click", {
+				type: 'PREV_STEP',
+				teacherSlideIndex: teacherSlideIndex
+			})
 			$('#next_step').show()
 			$('#close_session').hide()
 		})
