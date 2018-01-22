@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+  <head>
+		<title><%= main %></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="static/stylesheets/reset.css">
+		<link rel="stylesheet" type="text/css" href="static/stylesheets/index.css">
+		<script>
+			window.onload = function() { 
+				var neadReload = (typeof JSON.parse(sessionStorage.getItem('log'))) == 'object' ? true : false
+				if (neadReload) {
+					sessionStorage.setItem('log', Date.parse(new Date()))
+					location.reload()
+				} else {
+					sessionStorage.removeItem('log')
+				}
+			}
+		</script>
+  </head>
+<body>
+<div id="container">
+	<iframe id="iframe" src=""></iframe>
+	<div class="global_state">
+		<div class="slide_about">
+			当前课程页码: <p id="slideIndex"></p>
+		</div>
+		<div id="end_time">课程剩余时间：<span></span></div>
+	</div>
+	
+	
+	<img class="praise " src="static/images/praise.gif" alt="">
+  <img class="like " src="static/images/like.gif" alt="">
+  <div class="control" style="display: none;">
+    <div class="buttons">
+      <button id="gotoFirstSlide">First Slide</button>
+      <button id="prev_slide">Prev Slide</button>
+      <button id="next_slide">Next Slide</button>		
+      <button id="prev_step">Prev Step</button>
+      <button id="next_step">Next Step</button>
+      <button id="praise">praise</button>
+      <button id="like">like</button>
+      <button id="sync">sync</button>
+    </div>
+    <div class="log">
+      <p id="time"></p>
+      <!-- <p id="slideIndex"></p> -->
+    </div>	
+  </div>
+	<div id="logger" style="display: none;"></div>
+	<div id="Mask">
+		<span>加载中...</span>	
+	</div>
+</div>
+<script src="http://zeptojs.com/zepto.min.js"></script>
+<script src="https://js.pusher.com/4.1/pusher.min.js"></script>
+<!-- Ispring js -->
+<script>
+	/**
+	* 	sessionRequestId=58d1b23d602a4a0001e66f33
+	* 	sessionStartAt=1507073590164
+	* 	sessionEndAt=1507679587594
+	* 	lessonSlug=1072_2932_34582
+	//  http://localhost:8000/learner?sessionRequestId=51d1b23d602a4a0161e17ac6&sessionStartAt=1507073590164&sessionEndAt=1507679587594&lessonSlug=1247_4907_43490
+	*/
+	// DEV Working Space
+	// var IP = 'http://192.168.0.103:8769'
+	var IP = 'https://open.api.qooco.com'
+	var pusher = {}
+	var channel
+	var now_time = Date.parse(new Date())
+	var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1]
+	var sessionEndAt = window.location.search.match(/sessionEndAt=(\S*)&lessonSlug/)[1]
+	var sessionRequestId = window.location.search.match(/sessionRequestId=(\S*)&sessionStartAt/)[1]
+	var lessonSlug = window.location.search.match(/lessonSlug=(\S*)/)[1]
+	var learner_Slide_Index
+
+	// pusher 注册 会话监听相关
+	function pusherKey(sessionRequestId) {
+		$.get(IP + '/voip-web-api/pusher/key?lessonSlug=' + lessonSlug + '&sessionRequestId=' + sessionRequestId, function(res){
+			var status = res.status
+			if (status === 200) {
+				pusher = res.data
+				var pusherKey = pusher.pusherKey
+				var cluster = pusher.cluster
+				var channelName = pusher.channelName
+				
+				$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
+
+				Pusher.logToConsole = true
+				var pusher = new Pusher(pusherKey, {
+					cluster: cluster,
+					encrypted: true,
+					authTransport: 'jsonp',
+					authEndpoint: IP + '/voip-web-api/pusher/auth'
+				})
+				channel = pusher.subscribe(channelName)
+
+				channel.trigger("client-teacher-click", {
+					type: 'Learner_Slide_Index',
+					slide_index: parseInt($('#slideIndex span').text(), 10)
+				})
+				$('#Mask').hide()
+
+				channel.bind('client-teacher-click', function (data) {
+					var EVENT_TYPE = data
+					var TEACHER_SLIDE_INDEX = parseInt(EVENT_TYPE.teacherSlideIndex)
+					var LEARNERSLIDE_INDEX = parseInt($('#slideIndex span').text())
+					switch (EVENT_TYPE.type) {
+						case 'NEXT_STEP':
+							if ( TEACHER_SLIDE_INDEX !== LEARNERSLIDE_INDEX ) {
+								playbackController.gotoTimestamp(TEACHER_SLIDE_INDEX - 1, 0, 0, false)
+							}
+							$('#next_step').trigger('click')
+							break
+						case 'PREV_STEP':
+							if ( TEACHER_SLIDE_INDEX !== LEARNERSLIDE_INDEX ) {
+								playbackController.gotoTimestamp(TEACHER_SLIDE_INDEX, 0, 0, false)
+								$('#prev_step').trigger('click')
+							}
+							$('#prev_step').trigger('click')
+							break
+						case 'NEXT_SLIDE':
+							$('#next_slide').trigger('click')
+							break
+						case 'PREV_SLIDE':
+							$('#prev_slide').trigger('click')
+							break
+						case 'FIRST_SLIDE':
+							$('#gotoFirstSlide').trigger('click')
+							break
+						case 'PRAISE':
+							$('#praise').trigger('click')
+							break
+						case 'LIKE':
+							$('#like').trigger('click')
+							break
+						case 'CLOSE_SESSION':
+							$('#gotoFirstSlide').trigger('click') 
+							localStorage.clear()
+							location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+							break
+						case 'teacher_Slide_Index':
+							learner_Slide_Index = parseInt(EVENT_TYPE.slide_index, 10)
+							$('#sync').trigger('click')
+							break
+					}
+				})
+			} else if (status === 400) {
+				$('#iframe').attr('src', '')
+				localStorage.clear()
+				location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+			} else if (status === 401) {
+				alert(res.error)
+			}
+		})
+	}
+
+	var loading = (localStorage.getItem('session_id') == null)
+	// 本地local无sessionid 创建新会话
+	if ( loading ) {
+		localStorage.setItem('session_id', sessionRequestId)
+		pusherKey(sessionRequestId)
+	} else {
+		// sessionid 手动切换 解决幻灯片强制首页
+		var LOCAL_SESSION_ID = localStorage.getItem('session_id')
+			localStorage.setItem('session_id', sessionRequestId)
+			if ( LOCAL_SESSION_ID !== sessionRequestId) {
+				localStorage.clear()
+				location.reload()
+			}
+			pusherKey(LOCAL_SESSION_ID)
+	}
+
+	var timeLabel = document.getElementById("time")
+	var slideIndexLabel = document.getElementById("slideIndex")
+	var slideIndex
+	var slidesCount
+	var playbackController
+	var isPlayedPresentation
+	var ispringPresentationConnector = {}
+
+	// 同步
+	$('#sync').on('click', function() {
+		playbackController.gotoTimestamp(learner_Slide_Index - 1, 0, 0, false)
+	})
+
+	// praise 点赞
+	$('#praise').on('click', function() {
+		$('.praise').addClass('animated bounceIn')
+		setTimeout(function() {
+			$('.praise').removeClass('bounceIn').addClass('bounceOut')
+		},1000)
+		setTimeout(function() {
+			$('.praise').removeClass('animated bounceOut')
+		},1500)
+	})
+
+	// 喜欢 like
+	$('#like').on('click', function() {
+		channel.trigger("client-teacher-click", 'LIKE')
+		$('.like').addClass('animated bounceIn')
+		setTimeout(function() {
+			$('.like').removeClass('bounceIn').addClass('bounceOut')
+		},1000)
+		setTimeout(function() {
+			$('.like').removeClass('animated bounceOut')
+		},1500)
+	})
+
+	// player init
+	function playerInit() { 
+		ispringPresentationConnector.register = function(player) {
+			logger("Teacher Player Running...")
+			var presentation = player.presentation()
+			slidesCount = presentation.slides().count()
+			playbackController = player.view().playbackController()
+			initPlaybackControllerEventsHandlers()
+			initButtonsEventsHandlers()
+			sessionCountDown()
+		}
+	}
+	
+	// player event
+	// Player-SDK/documentation/js-api/ispring.presenter.player.IPresentationPlaybackController.html#playbackState
+	function initPlaybackControllerEventsHandlers() {
+		playbackController.slideChangeEvent().addHandler(function(slideIndex) {
+			slideIndex = slideIndex
+			slideIndexLabel.innerHTML = "<span>" + (slideIndex + 1) + "</span> / " + slidesCount
+		})
+	
+		playbackController.clock().tickEvent().addHandler(function(clock) {
+			var timeOffset = clock.timestamp().timeOffset()
+			var minutes = Math.floor(timeOffset / 60)
+			var seconds = Math.round(timeOffset % 60)
+			timeLabel.innerHTML = (minutes < 10) ? "0" + minutes: minutes
+			timeLabel.innerHTML += ":"
+			timeLabel.innerHTML += (seconds < 10) ? "0" + seconds: seconds
+		})
+	}
+	// control button
+	function initButtonsEventsHandlers() {
+		$('#prev_slide').on('click', function() {
+			playbackController.gotoPreviousSlide()
+		})
+		$('#next_slide').on('click', function() {
+			playbackController.gotoNextSlide()
+		})
+		$('#prev_step').on('click', function() {
+			playbackController.gotoPreviousStep()
+			channel.trigger("client-teacher-click", '1')
+		})
+		$('#next_step').on('click', function() {
+			playbackController.gotoNextStep()
+		})
+		$('#gotoFirstSlide').on('click', function() {
+			playbackController.gotoFirstSlide(false)
+		})
+	}
+
+	// debug logger 
+	function logger(text) {
+		var logger = document.getElementById("logger")
+		logger.innerHTML = logger.innerHTML + text + '<br>'
+	}
+
+	// 倒计时 1200000
+	function sessionCountDown() {
+		var min, sec;
+		// sessionStartAt sessionEndAt now_time
+		var session_time_long = sessionEndAt - now_time
+		if (session_time_long) {
+			var timer = setInterval(function() {
+				session_time_long -= 1000
+				min = new Date(session_time_long).getMinutes()
+				min = (min < 10) ? ('0' + min) : min
+				min < 1 && $('#end_time span').css({'color': 'red','font-weight': 'bolder'})
+				sec = new Date(session_time_long).getSeconds()
+				sec = (sec < 10) ? ('0' + sec) : sec
+				$("#end_time span").text(min + "' " + sec + "''")
+				if (parseInt(session_time_long, 10) <= 0) {
+					$('#end_time').text('会话已经结束').css({'color': 'red','font-weight': 'bolder'})
+					clearInterval(timer)
+					$.post(IP + '/voip-web-api/session/complete-session/' + sessionRequestId + '/recorded-time/' + sessionStartAt, function(res){
+						localStorage.clear()
+						location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+					})
+					location.replace('/sessionend' + '?sessionRequestId=' + sessionRequestId + '&sessionStartAt=' + sessionStartAt + '&sessionEndAt=' + sessionEndAt + '&lessonSlug=' + lessonSlug)
+				}
+			}, 1000)
+		}
+	}
+	
+	// player start
+	window.onload = function() {
+		playerInit()
+	}
+</script>
+</body>
+</html>
