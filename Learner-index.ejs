@@ -27,7 +27,6 @@
 		<div id="end_time">课程剩余时间：<span></span></div>
 	</div>
 	
-	
 	<img class="praise " src="static/images/praise.gif" alt="">
   <img class="like " src="static/images/like.gif" alt="">
   <div class="control" style="display: none;">
@@ -51,8 +50,8 @@
 		<span>加载中...</span>	
 	</div>
 </div>
-<script src="http://zeptojs.com/zepto.min.js"></script>
 <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
+<script src="http://zeptojs.com/zepto.min.js"></script>
 <!-- Ispring js -->
 <script>
 	/**
@@ -65,7 +64,6 @@
 	// DEV Working Space
 	// var IP = 'http://192.168.0.103:8769'
 	var IP = 'https://open.api.qooco.com'
-	var pusher = {}
 	var channel
 	var now_time = Date.parse(new Date())
 	var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1]
@@ -79,26 +77,33 @@
 		$.get(IP + '/voip-web-api/pusher/key?lessonSlug=' + lessonSlug + '&sessionRequestId=' + sessionRequestId, function(res){
 			var status = res.status
 			if (status === 200) {
-				pusher = res.data
-				var pusherKey = pusher.pusherKey
-				var cluster = pusher.cluster
-				var channelName = pusher.channelName
-				
-				$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
+				data = res.data
+				var pusherKey = data.pusherKey
+				var cluster = data.cluster
+				var channelName = data.channelName
 
-				Pusher.logToConsole = true
+				$('#iframe').attr('src', '/static/subjects/' + data.lessonLevel)
+
+				// alert( '课程::\n' + JSON.stringify(data.lessonLevel))
+
+				Pusher.logToConsole = false
 				var pusher = new Pusher(pusherKey, {
 					cluster: cluster,
 					encrypted: true,
 					authTransport: 'jsonp',
 					authEndpoint: IP + '/voip-web-api/pusher/auth'
 				})
-				channel = pusher.subscribe(channelName)
 
+				// alert('会话key::' + pusher.key + '\n会话sessionID::' + pusher.sessionID)
+				
+				channel = pusher.subscribe(channelName)
+				// alert('channel-name::' + channel.name)
+				
 				channel.trigger("client-teacher-click", {
 					type: 'Learner_Slide_Index',
 					slide_index: parseInt($('#slideIndex span').text(), 10)
 				})
+				// alert('next hide mask')
 				$('#Mask').hide()
 
 				channel.bind('client-teacher-click', function (data) {
@@ -155,20 +160,20 @@
 		})
 	}
 
-	var loading = (localStorage.getItem('session_id') == null)
+	var loading = (sessionStorage.getItem('session_id') == null)
 	// 本地local无sessionid 创建新会话
 	if ( loading ) {
-		localStorage.setItem('session_id', sessionRequestId)
+		sessionStorage.setItem('session_id', sessionRequestId)
 		pusherKey(sessionRequestId)
 	} else {
 		// sessionid 手动切换 解决幻灯片强制首页
-		var LOCAL_SESSION_ID = localStorage.getItem('session_id')
-			localStorage.setItem('session_id', sessionRequestId)
-			if ( LOCAL_SESSION_ID !== sessionRequestId) {
-				localStorage.clear()
-				location.reload()
-			}
-			pusherKey(LOCAL_SESSION_ID)
+		var LOCAL_SESSION_ID = sessionStorage.getItem('session_id')
+		sessionStorage.setItem('session_id', sessionRequestId)
+		if ( LOCAL_SESSION_ID !== sessionRequestId) {
+			sessionStorage.clear()
+			location.reload()
+		}
+		pusherKey(LOCAL_SESSION_ID)
 	}
 
 	var timeLabel = document.getElementById("time")

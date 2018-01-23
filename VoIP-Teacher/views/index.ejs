@@ -142,7 +142,6 @@
 
 	// var IP = 'http://192.168.0.103:8769'
 	var IP = 'https://open.api.qooco.com'
-	var pusher = {}
 	var channel;
 	var now_time = Date.parse(new Date())
 	var sessionStartAt = window.location.search.match(/sessionStartAt=(\S*)&sessionEndAt/)[1];
@@ -163,12 +162,12 @@
 		$.get(IP + '/voip-web-api/pusher/key?lessonSlug='+lessonSlug+'&sessionRequestId='+sessionRequestId, function(res){
 			var status = res.status
 			if (status === 200) { 
-				pusher = res.data
-				var pusherKey = pusher.pusherKey
-				var cluster = pusher.cluster
-				var channelName = pusher.channelName
+				data = res.data
+				var pusherKey = data.pusherKey
+				var cluster = data.cluster
+				var channelName = data.channelName
 
-				$('#iframe').attr('src', '/static/subjects/' + pusher.lessonLevel)
+				$('#iframe').attr('src', '/static/subjects/' + data.lessonLevel)
 
 				Pusher.logToConsole = true;
 				var pusher = new Pusher(pusherKey, {
@@ -179,6 +178,8 @@
 				});
 				channel = pusher.subscribe(channelName)
 				
+				$('#Mask').hide()
+
 				// 同步处理 about 前进后退触发事件完成 。。。 学生端处理
 				channel.bind('client-teacher-click', function (data) {
 					var EVENT_TYPE = data
@@ -187,8 +188,8 @@
 						var teacher_slide_index = parseInt($('#slide_index').text(), 10)
 						$('#Mask').show()
 						setTimeout(function() {
-							$('#Mask').hide()
 							$('#sync').trigger('click')
+							$('#Mask').hide()
 						}, 1000)
 					}
 				})
